@@ -55,7 +55,7 @@ function showQrModal() {
   showModal(`
     <h3>添加顾问微信</h3>
     <p>微信扫一扫，添加求职顾问<br>即可获得免费职业诊断机会</p>
-    <div class="qr-img"><img src="assets/img/qr-wechat.svg" alt="顾问微信二维码"></div>
+    <div class="qr-img"><img src="assets/img/qr-wechat.png" alt="顾问微信二维码"></div>
     <p class="qr-caption">得欧求职顾问 · 扫码添加 · 免费评估</p>`);
 }
 function showComingSoon(feature) {
@@ -123,7 +123,7 @@ function initHomeSections() {
   if (companies) {
     companies.innerHTML = COMPANIES.map((c) => `
       <div class="company-card">
-        <div class="company-logo" style="background:${c.color}">${c.name[0]}</div>
+        ${c.icon ? `<img class="company-logo-img" src="${c.icon}" alt="${c.name}" loading="lazy">` : `<div class="company-logo" style="background:${c.color}">${c.name[0]}</div>`}
         <h4>${c.name}</h4><span>${c.product}</span>
       </div>`).join("");
     document.getElementById("companiesNote").textContent = COMPANIES_NOTE;

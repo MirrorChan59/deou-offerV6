@@ -56,16 +56,16 @@ const TRACKS = [
 
 /* ---------- 目标合作企业 ---------- */
 const COMPANIES = [
-  { name: "字节跳动", product: "抖音", color: "#161823" },
-  { name: "腾讯", product: "微信", color: "#07c160" },
-  { name: "阿里巴巴", product: "淘宝", color: "#ff6a00" },
-  { name: "美团", product: "美团外卖", color: "#f6a200" },
-  { name: "百度", product: "百度搜索", color: "#2932e1" },
-  { name: "京东", product: "京东商城", color: "#e1251b" },
-  { name: "拼多多", product: "拼多多", color: "#e02e24" },
-  { name: "小红书", product: "小红书", color: "#ff2442" },
-  { name: "快手", product: "快手", color: "#ff4906" },
-  { name: "哔哩哔哩", product: "B站", color: "#fb7299" },
+  { name: "字节跳动", product: "抖音", color: "#161823" , icon: "assets/img/companies/douyin.png" },
+  { name: "腾讯", product: "微信", color: "#07c160" , icon: "assets/img/companies/wechat.png" },
+  { name: "阿里巴巴", product: "淘宝", color: "#ff6a00" , icon: "assets/img/companies/taobao.png" },
+  { name: "美团", product: "美团外卖", color: "#f6a200" , icon: "assets/img/companies/meituan.png" },
+  { name: "百度", product: "百度搜索", color: "#2932e1" , icon: "assets/img/companies/baidu.png" },
+  { name: "京东", product: "京东商城", color: "#e1251b" , icon: "assets/img/companies/jingdong.png" },
+  { name: "拼多多", product: "拼多多", color: "#e02e24" , icon: "assets/img/companies/pinduoduo.png" },
+  { name: "小红书", product: "小红书", color: "#ff2442" , icon: "assets/img/companies/xiaohongshu.png" },
+  { name: "快手", product: "快手", color: "#ff4906" , icon: "assets/img/companies/kuaishou.png" },
+  { name: "哔哩哔哩", product: "B站", color: "#fb7299" , icon: "assets/img/companies/bilibili.png" },
 ];
 const COMPANIES_NOTE = "* 仅展示部分合作企业，完整名单请咨询顾问";
 

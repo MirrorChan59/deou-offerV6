@@ -20,7 +20,7 @@ site/
 │   ├── css/style.css        # 全部样式（设计变量在 :root 中）
 │   ├── js/data.js           # 数据层：所有运营可配置内容集中在此
 │   ├── js/main.js           # 交互：轮播 / 标签页 / 筛选 / 弹窗 / 渠道归因
-│   └── img/*.svg            # 本地插图与二维码（见下方「上线前必换」）
+│   └── img/                 # logo.png / do-mark.png / qr-wechat.png + 插图；companies/ 为企业品牌图标
 └── README.md
 ```
 
@@ -44,9 +44,11 @@ npx serve .
 
 > 纯静态站点，Cloudflare Pages 直接按静态文件服务，无需任何构建。
 
-## 上线前必换
+## 上线前可换素材
 
-- **`assets/img/qr-wechat.svg`** —— 当前是**不可扫描的占位二维码**，请替换为真实企业微信二维码（同名覆盖即可，或在代码中改路径）。引用位置：`index.html`、`about.html`、`assets/js/main.js`（`showQrModal`）。
+- **`assets/img/qr-wechat.png`** —— 已是**真实企业微信二维码**（523×523 含白色静区，实测可扫）。若日后顾问换码，同名覆盖即可。引用位置：`index.html`、`about.html`、`assets/js/main.js`（`showQrModal`）。
+- **`assets/img/logo.png`** —— 品牌 DO 组合标（导航栏、关于页故事卡片），透明背景版；**`assets/img/do-mark.png`** —— DO 图形标（页脚白底徽章内），透明背景版。替换时请同样使用透明底 PNG，避免在页头上出现白底贴图感。
+- **`assets/img/companies/*.png`** —— 10 家合作企业品牌图标（按企业名命名），换图标同名覆盖；`data.js` 中 `COMPANIES[].icon` 指向对应文件。
 - `assets/img/banner-*.svg`、`banner-detail-*.svg`（「了解详情」弹窗图，9:16 竖版）、`hero-dashboard.svg`、`step-*.svg` —— 均为示意插图，可按品牌视觉替换。
 
 ## 内容配置（assets/js/data.js）

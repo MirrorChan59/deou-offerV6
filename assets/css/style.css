@@ -725,3 +725,12 @@ ul { list-style: none; }
   .footer-grid { grid-template-columns: 1fr; }
   .header-actions .btn-outline { display: none; }
 }
+
+/* ---------- 品牌 logo（预设 DO 组合标） ---------- */
+.brand-logo-img { height: 40px; width: auto; display: block; }
+.brand-badge { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; background: #fff; border-radius: 12px; flex: 0 0 44px; }
+.brand-badge .brand-mark { width: 32px; height: auto; display: block; }
+.site-footer .brand-en { color: #94a3b8; }
+.story-brand .brand-logo-img { height: 52px; width: auto; }
+
+.company-logo-img { width: 62px; height: 62px; margin: 0 auto 16px; border-radius: 16px; display: block; object-fit: cover; box-shadow: 0 6px 14px rgba(15,23,42,.12); }
