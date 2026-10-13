@@ -34,8 +34,13 @@ export async function onRequestPost(context) {
   try {
     if (env.FEISHU_APP_ID && env.FEISHU_APP_SECRET && env.BASE_TOKEN) {
       await batchCreate(env, TABLES.trackEvents, [fields]);
+    } else {
+      return json({ ok: false, error: "服务端环境变量未配置完整" }, 503);
     }
-  } catch (e) { /* 统计失败不影响用户访问 */ }
+  } catch (err) {
+    /* 统计失败不影响用户访问，但错误要可见，便于排查 */
+    return json({ ok: false, error: String(err && err.message || err) }, 502);
+  }
 
   return json({ ok: true });
 }

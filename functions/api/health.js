@@ -2,7 +2,7 @@
  * GET /api/health —— 同步链路自检（联通测试用，不泄露任何密钥）
  * 返回：环境变量是否就位（仅布尔）、飞书令牌是否可获取、各配置表记录数
  * ============================================================ */
-import { TABLES, getTenantToken, listRecords, json, optionsResponse } from "./_feishu.js";
+import { TABLES, getTenantToken, listRecords, batchCreate, batchDelete, json, optionsResponse } from "./_feishu.js";
 
 export async function onRequestGet(context) {
   const { env } = context;
@@ -44,6 +44,25 @@ export async function onRequestGet(context) {
       result.tables[names[key]] = "读取失败";
       result.errors.push(names[key] + "：" + String(err && err.message || err));
     }
+  }
+
+  /* 写入探针：写一条立即删除，验证应用对多维表格有编辑权限 */
+  try {
+    const created = await batchCreate(env, TABLES.trackEvents, [{
+      "渠道编码": "health-probe",
+      "事件类型": ["访问"],
+      "来源页面": "/api/health",
+      "发生时间": Date.now(),
+      "备注": "自检探针，自动删除",
+    }]);
+    const ids = created.map((r) => r.record_id).filter(Boolean);
+    if (ids.length) await batchDelete(env, TABLES.trackEvents, ids);
+    result.writeProbe = "ok";
+  } catch (err) {
+    result.ok = false;
+    result.writeProbe = "failed";
+    result.errors.push("写入探针失败：" + String(err && err.message || err) +
+      "（多为飞书应用未获得多维表格「可编辑」权限，请在多维表格右上角「···」→ 更多 → 添加协作者中确认应用权限）");
   }
 
   return json(result, result.ok ? 200 : 502);
