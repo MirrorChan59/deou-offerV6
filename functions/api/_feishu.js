@@ -124,8 +124,9 @@ export function txt(v) {
   return String(v);
 }
 
-/* 单选字段：数组，取第一个选项名 */
+/* 单选字段：原生 API 返回纯字符串（lark-cli 会归一成数组），两种形态都兼容 */
 export function selectOne(v) {
+  if (typeof v === "string") return v;
   if (!Array.isArray(v) || !v.length) return "";
   const first = v[0];
   return typeof first === "string" ? first : (first && (first.text || first.name)) || "";
