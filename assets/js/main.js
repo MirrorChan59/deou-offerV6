@@ -29,11 +29,21 @@ function icon(name) { return ICONS[name] || ICONS.image; }
     window.DEOU_CHANNEL = ch || (JSON.parse(localStorage.getItem("deou_channel") || "null") || {}).channel || null;
   } catch (e) { window.DEOU_CHANNEL = null; }
 })();
+/* ---------- 渠道事件上报：POST /api/track（统计-渠道事件表） ---------- */
+function trackEvent(event, extra) {
+  try {
+    var payload = JSON.stringify(Object.assign({
+      channel: window.DEOU_CHANNEL || "direct",
+      event: event,
+      page: location.pathname,
+    }, extra || {}));
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon("/api/track", new Blob([payload], { type: "application/json" }));
+    }
+  } catch (e) { /* 统计失败不影响访问 */ }
+}
 function reportChannel() {
-  /* TODO: 对接真实统计接口（配置后台「渠道二维码」模块的统计看板读取此数据） */
-  if (window.DEOU_CHANNEL && navigator.sendBeacon) {
-    // navigator.sendBeacon("/api/track", JSON.stringify({ channel: window.DEOU_CHANNEL, page: location.pathname }));
-  }
+  if (window.DEOU_CHANNEL) trackEvent("访问");
 }
 reportChannel();
 
@@ -52,11 +62,15 @@ function showModal(html, cls) {
   mask.className = "modal-mask show" + (cls ? " " + cls : "");
 }
 function showQrModal() {
+  trackEvent("扫码");
+  var ch = (window.DEOU_CHANNELS || []).filter(function (c) { return c.enabled && c.qrImage; })[0];
+  var qr = ch ? ch.qrImage : "assets/img/qr-wechat.png";
+  var caption = (ch ? ch.name : "得欧求职顾问") + " · 扫码添加 · 免费评估";
   showModal(`
     <h3>添加顾问微信</h3>
     <p>微信扫一扫，添加求职顾问<br>即可获得免费职业诊断机会</p>
-    <div class="qr-img"><img src="assets/img/qr-wechat.png" alt="顾问微信二维码"></div>
-    <p class="qr-caption">得欧求职顾问 · 扫码添加 · 免费评估</p>`);
+    <div class="qr-img"><img src="${qr}" alt="顾问微信二维码"></div>
+    <p class="qr-caption">${caption}</p>`);
 }
 function showComingSoon(feature) {
   showModal(`<h3>${feature || "登录"}</h3><p>该功能即将上线，敬请期待。<br>如需帮助可先添加顾问微信咨询。</p>
@@ -90,22 +104,29 @@ function initBanner() {
       </div>
       <div class="banner-media"><img src="${b.image}" alt="${b.title}"></div>
     </div>`).join("");
-  track.addEventListener("click", (e) => {
-    const btn = e.target.closest("[data-detail]");
-    if (btn) showBannerDetail(+btn.dataset.detail);
-  });
+  if (!root.dataset.bound) {
+    root.dataset.bound = "1";
+    track.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-detail]");
+      if (btn) showBannerDetail(+btn.dataset.detail);
+    });
+  }
   const dots = root.querySelector(".banner-dots");
   dots.innerHTML = BANNERS.map((_, i) => `<button data-i="${i}" aria-label="第${i + 1}张"></button>`).join("");
-  let cur = 0, timer;
+  /* 状态挂在 DOM 上：重复初始化（配置热更新重渲染）时不产生多个定时器 */
+  root._cur = 0;
   function go(i) {
-    cur = (i + BANNERS.length) % BANNERS.length;
-    track.style.transform = `translateX(-${cur * 100}%)`;
-    dots.querySelectorAll("button").forEach((d, j) => d.classList.toggle("active", j === cur));
+    root._cur = (i + BANNERS.length) % BANNERS.length;
+    track.style.transform = `translateX(-${root._cur * 100}%)`;
+    dots.querySelectorAll("button").forEach((d, j) => d.classList.toggle("active", j === root._cur));
   }
-  function auto() { clearInterval(timer); timer = setInterval(() => go(cur + 1), 5000); }
-  root.querySelector(".prev").addEventListener("click", () => { go(cur - 1); auto(); });
-  root.querySelector(".next").addEventListener("click", () => { go(cur + 1); auto(); });
-  dots.addEventListener("click", (e) => { if (e.target.dataset.i) { go(+e.target.dataset.i); auto(); } });
+  function auto() { clearInterval(root._timer); root._timer = setInterval(() => go(root._cur + 1), 5000); }
+  if (!root.dataset.boundListeners) {
+    root.dataset.boundListeners = "1";
+    root.querySelector(".prev").addEventListener("click", () => { go(root._cur - 1); auto(); });
+    root.querySelector(".next").addEventListener("click", () => { go(root._cur + 1); auto(); });
+    dots.addEventListener("click", (e) => { if (e.target.dataset.i) { go(+e.target.dataset.i); auto(); } });
+  }
   go(0); auto();
 }
 
@@ -198,12 +219,15 @@ function initCases() {
     const unlocked = CASES.length;
     document.getElementById("caseTotal").textContent = `共 ${unlocked} 个成功案例 · 登录查看全部 ${unlocked} 个案例`;
   }
-  filtersRoot.addEventListener("click", (e) => {
-    if (!e.target.dataset.f) return;
-    filtersRoot.querySelectorAll(".filter-pill").forEach((p) => p.classList.remove("active"));
-    e.target.classList.add("active");
-    render(e.target.dataset.f);
-  });
+  if (!filtersRoot.dataset.bound) {
+    filtersRoot.dataset.bound = "1";
+    filtersRoot.addEventListener("click", (e) => {
+      if (!e.target.dataset.f) return;
+      filtersRoot.querySelectorAll(".filter-pill").forEach((p) => p.classList.remove("active"));
+      e.target.classList.add("active");
+      render(e.target.dataset.f);
+    });
+  }
   render("全部");
 }
 
@@ -311,13 +335,16 @@ function initDirections() {
         <button class="btn btn-lg" onclick="showQrModal()">免费咨询</button>
       </div>`;
   }
-  tabsRoot.addEventListener("click", (e) => {
-    const btn = e.target.closest(".dir-tab");
-    if (!btn) return;
-    history.replaceState(null, "", "#" + btn.dataset.id);
-    render(btn.dataset.id);
-    content.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
+  if (!tabsRoot.dataset.bound) {
+    tabsRoot.dataset.bound = "1";
+    tabsRoot.addEventListener("click", (e) => {
+      const btn = e.target.closest(".dir-tab");
+      if (!btn) return;
+      history.replaceState(null, "", "#" + btn.dataset.id);
+      render(btn.dataset.id);
+      content.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
   render((location.hash || "").slice(1) || DIRECTIONS[0].id);
 }
 
