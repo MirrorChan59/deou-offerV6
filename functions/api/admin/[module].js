@@ -100,7 +100,7 @@ function toFields(module, rec, i) {
         "学员称呼": rec.name || "***",
         "学校": rec.school || "***",
         "届别": rec.year || "",
-        "方向": rec.direction ? [rec.direction] : undefined,
+        "方向": rec.direction || undefined,
         "Offer": rec.offer || "****",
         "辅导类型": rec.service || "",
         "需登录查看": rec.locked !== false,
@@ -111,7 +111,7 @@ function toFields(module, rec, i) {
       return dropUndef({
         "姓名": rec.name || "",
         "头衔": rec.role || "",
-        "领域": rec.field ? [rec.field] : undefined,
+        "领域": rec.field || undefined,
         "标签": Array.isArray(rec.tags) ? rec.tags.join(",") : (rec.tags || ""),
         "简介": rec.bio || "",
         "头像": attach(rec.photoToken),

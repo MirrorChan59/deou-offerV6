@@ -50,7 +50,7 @@ export async function onRequestGet(context) {
   try {
     const created = await batchCreate(env, TABLES.trackEvents, [{
       "渠道编码": "health-probe",
-      "事件类型": ["访问"],
+      "事件类型": "访问",
       "来源页面": "/api/health",
       "发生时间": Date.now(),
       "备注": "自检探针，自动删除",

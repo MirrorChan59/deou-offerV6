@@ -25,7 +25,7 @@ export async function onRequestPost(context) {
 
   const fields = {
     "渠道编码": body.channel || "direct",
-    "事件类型": [event],
+    "事件类型": event,
     "来源页面": body.page || "",
     "发生时间": Date.now(),
     "备注": note,
