@@ -1,0 +1,349 @@
+/* ============================================================
+ * 得欧求职 · 官网前台交互
+ * 无依赖原生 JS：轮播 / 方向标签 / 案例筛选 / 二维码弹窗 / 渠道归因
+ * ============================================================ */
+
+/* ---------- 图标库（内联 SVG） ---------- */
+const ICONS = {
+  cube: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  chart: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
+  megaphone: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>',
+  trend: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>',
+  image: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  briefcase: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+};
+function icon(name) { return ICONS[name] || ICONS.image; }
+
+/* ---------- 渠道归因：读取 ?channel= 参数并持久化 ----------
+ * 渠道二维码生成的官网 URL 携带 channel 参数，前台在此捕获。
+ * 后续接真实统计接口时，在 reportChannel() 内补充上报逻辑。 */
+(function captureChannel() {
+  try {
+    const ch = new URLSearchParams(location.search).get("channel");
+    if (ch) {
+      localStorage.setItem("deou_channel", JSON.stringify({ channel: ch, ts: Date.now() }));
+    }
+    window.DEOU_CHANNEL = ch || (JSON.parse(localStorage.getItem("deou_channel") || "null") || {}).channel || null;
+  } catch (e) { window.DEOU_CHANNEL = null; }
+})();
+function reportChannel() {
+  /* TODO: 对接真实统计接口（配置后台「渠道二维码」模块的统计看板读取此数据） */
+  if (window.DEOU_CHANNEL && navigator.sendBeacon) {
+    // navigator.sendBeacon("/api/track", JSON.stringify({ channel: window.DEOU_CHANNEL, page: location.pathname }));
+  }
+}
+reportChannel();
+
+/* ---------- 二维码 / 提示弹窗 ---------- */
+function showModal(html, cls) {
+  let mask = document.querySelector(".modal-mask");
+  if (!mask) {
+    mask = document.createElement("div");
+    mask.className = "modal-mask";
+    mask.innerHTML = '<div class="modal"><button class="close" aria-label="关闭">×</button><div class="modal-body"></div></div>';
+    document.body.appendChild(mask);
+    mask.addEventListener("click", (e) => { if (e.target === mask) mask.classList.remove("show"); });
+    mask.querySelector(".close").addEventListener("click", () => mask.classList.remove("show"));
+  }
+  mask.querySelector(".modal-body").innerHTML = html;
+  mask.className = "modal-mask show" + (cls ? " " + cls : "");
+}
+function showQrModal() {
+  showModal(`
+    <h3>添加顾问微信</h3>
+    <p>微信扫一扫，添加求职顾问<br>即可获得免费职业诊断机会</p>
+    <div class="qr-img"><img src="assets/img/qr-wechat.svg" alt="顾问微信二维码"></div>
+    <p class="qr-caption">得欧求职顾问 · 扫码添加 · 免费评估</p>`);
+}
+function showComingSoon(feature) {
+  showModal(`<h3>${feature || "登录"}</h3><p>该功能即将上线，敬请期待。<br>如需帮助可先添加顾问微信咨询。</p>
+    <div style="margin-top:22px"><button class="btn btn-primary" onclick="document.querySelector('.modal-mask').classList.remove('show');showQrModal()">添加顾问微信</button></div>`);
+}
+
+/* ---------- 首页：Banner 轮播 ---------- */
+function showBannerDetail(i) {
+  const b = BANNERS[i];
+  if (!b || !b.detailImage) return;
+  showModal(`
+    <h3>${b.title}</h3>
+    <div class="detail-img"><img src="${b.detailImage}" alt="${b.title}·详情"></div>`, "img-modal");
+}
+function initBanner() {
+  const root = document.getElementById("bannerCarousel");
+  if (!root) return;
+  const track = root.querySelector(".banner-track");
+  track.innerHTML = BANNERS.map((b, i) => `
+    <div class="banner-slide" style="background:${b.gradient}">
+      <svg class="deco" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice">
+        <circle cx="980" cy="80" r="130" fill="rgba(255,255,255,.07)"/>
+        <circle cx="1060" cy="300" r="90" fill="rgba(255,255,255,.05)"/>
+        <circle cx="140" cy="340" r="70" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="14" stroke-dasharray="2 22" stroke-linecap="round"/>
+      </svg>
+      <div class="banner-inner">
+        <span class="banner-tag">${b.tag}</span>
+        <h1 class="banner-title">${b.title}</h1>
+        <p class="banner-sub">${b.subtitle}</p>
+        ${b.detailImage ? `<button class="banner-cta" type="button" data-detail="${i}">了解详情<span class="arr">→</span></button>` : ""}
+      </div>
+      <div class="banner-media"><img src="${b.image}" alt="${b.title}"></div>
+    </div>`).join("");
+  track.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-detail]");
+    if (btn) showBannerDetail(+btn.dataset.detail);
+  });
+  const dots = root.querySelector(".banner-dots");
+  dots.innerHTML = BANNERS.map((_, i) => `<button data-i="${i}" aria-label="第${i + 1}张"></button>`).join("");
+  let cur = 0, timer;
+  function go(i) {
+    cur = (i + BANNERS.length) % BANNERS.length;
+    track.style.transform = `translateX(-${cur * 100}%)`;
+    dots.querySelectorAll("button").forEach((d, j) => d.classList.toggle("active", j === cur));
+  }
+  function auto() { clearInterval(timer); timer = setInterval(() => go(cur + 1), 5000); }
+  root.querySelector(".prev").addEventListener("click", () => { go(cur - 1); auto(); });
+  root.querySelector(".next").addEventListener("click", () => { go(cur + 1); auto(); });
+  dots.addEventListener("click", (e) => { if (e.target.dataset.i) { go(+e.target.dataset.i); auto(); } });
+  go(0); auto();
+}
+
+/* ---------- 首页：核心方向 / 合作企业 ---------- */
+function initHomeSections() {
+  const tracks = document.getElementById("tracksGrid");
+  if (tracks) {
+    tracks.innerHTML = TRACKS.map((t) => `
+      <a class="track-card" href="directions.html#${t.id}">
+        <div class="track-icon">${icon(t.icon)}</div>
+        <h3>${t.name}</h3><p>${t.desc}</p>
+      </a>`).join("");
+  }
+  const companies = document.getElementById("companiesGrid");
+  if (companies) {
+    companies.innerHTML = COMPANIES.map((c) => `
+      <div class="company-card">
+        <div class="company-logo" style="background:${c.color}">${c.name[0]}</div>
+        <h4>${c.name}</h4><span>${c.product}</span>
+      </div>`).join("");
+    document.getElementById("companiesNote").textContent = COMPANIES_NOTE;
+  }
+}
+
+/* ---------- 服务流程页 ---------- */
+function initProcess() {
+  const root = document.getElementById("processSteps");
+  if (!root) return;
+  root.innerHTML = PROCESS_STEPS.map((s, i) => `
+    <div class="process-step ${i % 2 ? "flip" : ""}">
+      <div class="container">
+        <div class="step-info">
+          <div class="step-head">
+            <span class="step-no">${s.no}</span>
+            <div><h2>${s.title}</h2><div class="step-en">${s.en}</div></div>
+          </div>
+          <p class="step-desc">${s.desc}</p>
+          <div class="step-feats">
+            ${s.feats.map((f) => `
+              <div class="step-feat">
+                <div class="ico">${icon("image")}</div>
+                <div><strong>${f.name}</strong><span>${f.sub}</span></div>
+              </div>`).join("")}
+          </div>
+        </div>
+        <div class="step-media">
+          ${s.shots.map((sh) => `
+            <div class="step-shot">
+              <img src="${sh.img}" alt="${sh.caption}">
+              <span class="shot-tag">${sh.tag}</span>
+              <div class="shot-caption"><b>${sh.caption}</b><span>运营可替换</span></div>
+            </div>`).join("")}
+        </div>
+      </div>
+    </div>`).join("");
+}
+
+/* ---------- 成功案例页 ---------- */
+function initCases() {
+  const filtersRoot = document.getElementById("caseFilters");
+  const table = document.getElementById("caseTable");
+  if (!filtersRoot || !table) return;
+  filtersRoot.innerHTML = CASE_FILTERS.map((f, i) =>
+    `<button class="filter-pill ${i === 0 ? "active" : ""}" data-f="${f}">${f}</button>`).join("");
+  function match(c, f) {
+    if (f === "全部") return true;
+    if (f === "市场") return c.direction.indexOf("市场") === 0;
+    return c.direction === f || (f === "运营" && c.direction.indexOf("运营") > -1);
+  }
+  function render(f) {
+    const list = CASES.filter((c) => match(c, f));
+    table.innerHTML = `
+      <div class="case-row head">
+        <div>姓名 / 学校</div><div>目标方向</div><div class="hide-m">届别</div>
+        <div class="hide-m">服务类型</div><div>Offer</div><div style="text-align:right">查看</div>
+      </div>` + list.map((c) => `
+      <div class="case-row">
+        <div class="case-person">
+          <div class="case-avatar ${c.locked ? "locked" : ""}">${c.surname}</div>
+          <div><b>${c.name}</b><span>${c.school}</span></div>
+        </div>
+        <div><span class="tag-pill">${c.direction}</span></div>
+        <div class="hide-m">${c.year}</div>
+        <div class="hide-m">${c.service}</div>
+        <div class="case-offer">${c.offer}</div>
+        <div style="text-align:right">${c.locked
+          ? '<button class="btn btn-ghost-light" onclick="showComingSoon(\'登录查看完整案例\')">🔒 登录查看</button>'
+          : '<button class="btn btn-outline" onclick="showComingSoon(\'案例详情\')">查看详情 →</button>'}</div>
+      </div>`).join("");
+    const unlocked = CASES.length;
+    document.getElementById("caseTotal").textContent = `共 ${unlocked} 个成功案例 · 登录查看全部 ${unlocked} 个案例`;
+  }
+  filtersRoot.addEventListener("click", (e) => {
+    if (!e.target.dataset.f) return;
+    filtersRoot.querySelectorAll(".filter-pill").forEach((p) => p.classList.remove("active"));
+    e.target.classList.add("active");
+    render(e.target.dataset.f);
+  });
+  render("全部");
+}
+
+/* ---------- 讲师团队页 ---------- */
+function initLecturers() {
+  const grid = document.getElementById("lecturerGrid");
+  if (!grid) return;
+  grid.innerHTML = INSTRUCTORS.map((t) => `
+    <div class="lecturer-card">
+      <div class="lecturer-photo">
+        <span class="field-tag">${t.field}</span>
+        ${t.photo
+          ? `<img src="${t.photo}" alt="${t.name}">`
+          : `<svg class="placeholder-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4 0-8 2-8 5v3h16v-3c0-3-4-5-8-5z"/></svg>`}
+      </div>
+      <div class="lecturer-body">
+        <h3>${t.name}</h3>
+        <div class="role">${t.role}</div>
+        <p class="bio">${t.bio}</p>
+        <div class="lecturer-tags">${t.tags.map((x) => `<span>${x}</span>`).join("")}</div>
+      </div>
+    </div>`).join("");
+}
+
+/* ---------- 核心方向页 ---------- */
+function initDirections() {
+  const tabsRoot = document.getElementById("dirTabs");
+  const content = document.getElementById("dirContent");
+  if (!tabsRoot || !content) return;
+  tabsRoot.innerHTML = DIRECTIONS.map((d) =>
+    `<button class="dir-tab" data-id="${d.id}">${icon(d.icon)}${d.name}</button>`).join("");
+  function render(id) {
+    const d = DIRECTIONS.find((x) => x.id === id) || DIRECTIONS[0];
+    tabsRoot.querySelectorAll(".dir-tab").forEach((t) => t.classList.toggle("active", t.dataset.id === d.id));
+    content.innerHTML = `
+      <div class="dir-hero">
+        <span class="badge">${d.badge}</span>
+        <h1>${d.name}</h1>
+        <p class="intro">${d.intro}</p>
+        <div class="dir-stats">
+          ${d.stats.map((s) => `<div class="dir-stat"><b>${s.value}</b><span>${s.label}</span></div>`).join("")}
+        </div>
+      </div>
+
+      <div class="dir-section">
+        <h2>${d.mbtiTitle}</h2>
+        <p class="sec-sub">性格特征与 MBTI 类型匹配参考</p>
+        <div class="mbti-grid">
+          ${d.mbti.map((m) => `
+            <div class="mbti-card"><b class="type">${m.type}</b><div class="name">${m.name}</div><p>${m.desc}</p></div>`).join("")}
+        </div>
+      </div>
+
+      <div class="dir-section">
+        <h2>细分方向与工作状态</h2>
+        <p class="sec-sub">${d.subsSub}</p>
+        ${d.subs.map((s) => `
+          <div class="subdir">
+            <div class="subdir-head">
+              <span class="no">${s.no}</span><h3>${s.title}</h3><span class="tag">${s.tag}</span>
+            </div>
+            <p class="subdir-desc">${s.desc}</p>
+            <div class="salary-row">
+              <span class="lab">薪资参考</span>
+              <div class="item"><b>${s.salary[0]}</b><span>校招</span></div>
+              <div class="item"><b>${s.salary[1]}</b><span>3年</span></div>
+              <div class="item"><b>${s.salary[2]}</b><span>5年+</span></div>
+            </div>
+            <div class="subdir-cols">
+              <div class="subdir-col"><b>${icon("briefcase")}日常工作状态</b><p>${s.work}</p></div>
+              <div class="subdir-col"><b>${icon("check")}适合人群</b><p>${s.fit}</p></div>
+            </div>
+          </div>`).join("")}
+      </div>
+
+      <div class="dir-section">
+        <h2>什么专业背景更对口？</h2>
+        <p class="sec-sub">常见对口专业及优势分析</p>
+        <div class="major-list">
+          ${d.majors.map((m) => `<div class="major-item"><b>${m.name}</b><span class="dash">—</span><span>${m.desc}</span></div>`).join("")}
+        </div>
+      </div>
+
+      <div class="dir-section">
+        <h2>薪资水平与职业发展</h2>
+        <p class="sec-sub">行业薪资参考与职业晋升路径</p>
+        <div class="salary-cards">
+          ${d.salaryLevels.map((s) => `
+            <div class="salary-card"><div class="lv">${s.level}</div><b>${s.range}</b><span>${s.note}</span></div>`).join("")}
+        </div>
+        <div class="dir-section">
+          <h2>职业发展路径</h2>
+          <div class="path-line">
+            ${d.path.map((p) => `
+              <div class="path-item"><div class="role">${p.role}</div><div class="period">${p.period}</div><p>${p.desc}</p></div>`).join("")}
+          </div>
+        </div>
+      </div>
+
+      <div class="dir-cta">
+        <div>
+          <h2>想知道自己适合${d.name}方向吗？</h2>
+          <p>添加顾问微信，获取15分钟1v1免费职业诊断</p>
+        </div>
+        <button class="btn btn-lg" onclick="showQrModal()">免费咨询</button>
+      </div>`;
+  }
+  tabsRoot.addEventListener("click", (e) => {
+    const btn = e.target.closest(".dir-tab");
+    if (!btn) return;
+    history.replaceState(null, "", "#" + btn.dataset.id);
+    render(btn.dataset.id);
+    content.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  render((location.hash || "").slice(1) || DIRECTIONS[0].id);
+}
+
+/* ---------- 关于我们页 ---------- */
+function initAbout() {
+  const stats = document.getElementById("aboutStats");
+  if (stats) stats.innerHTML = ABOUT.stats.map((s) => `<div class="stat-card"><b>${s.value}</b><span>${s.label}</span></div>`).join("");
+  const schools = document.getElementById("schoolGrid");
+  if (schools) schools.innerHTML = ABOUT.schools.map((s) => `
+    <div class="school-card"><span class="emo">🎓</span><div><b>${s.name}</b><span>${s.note}</span></div></div>`).join("");
+}
+
+/* ---------- 全局：导航高亮 + 按钮接线 ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  const page = document.body.dataset.page;
+  document.querySelectorAll(".main-nav a").forEach((a) => {
+    if (a.dataset.nav === page) a.classList.add("active");
+  });
+  document.querySelectorAll("[data-action='qr']").forEach((b) => b.addEventListener("click", showQrModal));
+  document.querySelectorAll("[data-action='login']").forEach((b) => b.addEventListener("click", () => showComingSoon("登录 / 注册")));
+  document.querySelectorAll("[data-action='doc']").forEach((b) => b.addEventListener("click", () => showComingSoon(b.textContent.trim())));
+  initBanner();
+  initHomeSections();
+  initProcess();
+  initCases();
+  initLecturers();
+  initDirections();
+  initAbout();
+});

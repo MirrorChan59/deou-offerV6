@@ -1,0 +1,25 @@
+<!-- Banner 插图：产品经理特训营（运营可在配置后台替换） -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 300" fill="none">
+  <rect width="380" height="300" rx="16" fill="rgba(255,255,255,.14)"/>
+  <rect x="1" y="1" width="378" height="298" rx="15" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
+  <!-- 白板 -->
+  <rect x="80" y="56" width="220" height="160" rx="14" fill="rgba(255,255,255,.95)"/>
+  <rect x="80" y="56" width="220" height="160" rx="14" stroke="#0e7490" stroke-width="3" fill="none"/>
+  <line x1="160" y1="216" x2="140" y2="252" stroke="#0e7490" stroke-width="5" stroke-linecap="round"/>
+  <line x1="220" y1="216" x2="240" y2="252" stroke="#0e7490" stroke-width="5" stroke-linecap="round"/>
+  <!-- 增长曲线 -->
+  <polyline points="104,180 140,150 170,164 210,120 244,132 276,88" stroke="#2563eb" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <polygon points="276,88 258,88 272,106" fill="#2563eb"/>
+  <circle cx="140" cy="150" r="6" fill="#f59e0b"/>
+  <circle cx="210" cy="120" r="6" fill="#f59e0b"/>
+  <!-- 柱状 -->
+  <rect x="104" y="96" width="16" height="40" rx="3" fill="#bfdbfe"/>
+  <rect x="128" y="84" width="16" height="52" rx="3" fill="#93c5fd"/>
+  <!-- 便签 -->
+  <rect x="232" y="150" width="44" height="44" rx="6" fill="#fde68a" transform="rotate(6 254 172)"/>
+  <line x1="240" y1="164" x2="268" y2="168" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+  <line x1="239" y1="176" x2="262" y2="180" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+  <!-- 星星 -->
+  <circle cx="64" cy="80" r="4" fill="#fff" opacity=".7"/>
+  <circle cx="322" cy="240" r="5" fill="#fff" opacity=".6"/>
+</svg>

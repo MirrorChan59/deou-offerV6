@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>得欧求职 DEOU CAREER · 专注互联网岗位应届生求职辅导</title>
+  <meta name="description" content="得欧求职：面向 QS50 海外硕士与国内 211/985 硕士的互联网求职辅导，覆盖产品经理、运营、数据分析、市场、商业分析五大方向。">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="home">
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html" aria-label="得欧求职首页">
+        <svg class="brand-logo" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <defs><linearGradient id="blg-h" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#4f46e5"/>
+          </linearGradient></defs>
+          <rect width="40" height="40" rx="11" fill="url(#blg-h)"/>
+          <path d="M13 27V13h7.2c4 0 6.8 2.7 6.8 7s-2.8 7-6.8 7H13zm4-3.4h3c2.1 0 3.2-1.4 3.2-3.6s-1.1-3.6-3.2-3.6h-3v7.2z" fill="#fff"/>
+        </svg>
+        <div>
+          <div class="brand-name">得欧求职</div>
+          <div class="brand-en">DEOU CAREER</div>
+        </div>
+      </a>
+      <nav class="main-nav" aria-label="主导航">
+        <a href="index.html" data-nav="home">首页</a>
+        <a href="service.html" data-nav="service">服务流程</a>
+        <a href="directions.html" data-nav="directions">核心方向</a>
+        <a href="cases.html" data-nav="cases">成功案例</a>
+        <a href="about.html" data-nav="about">关于我们</a>
+        <a href="lecturers.html" data-nav="lecturers">讲师团队</a>
+      </nav>
+      <div class="header-actions">
+        <button class="btn btn-outline" data-action="login">登录</button>
+        <button class="btn btn-primary" data-action="qr">预约咨询</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Banner 轮播（运营可配置：data.js · BANNERS；配置 detailImage 的 Banner 展示「了解详情」按钮） -->
+    <section class="hero-banner">
+      <div class="container">
+        <div class="banner-carousel" id="bannerCarousel">
+          <div class="banner-track"></div>
+          <button class="banner-arrow prev" aria-label="上一张">‹</button>
+          <button class="banner-arrow next" aria-label="下一张">›</button>
+          <div class="banner-dots"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <div>
+          <div class="hero-chips">
+            <span class="chip">产品经理</span>
+            <span class="chip">运营</span>
+            <span class="chip">数据分析</span>
+            <span class="chip">市场营销</span>
+            <span class="chip">商业分析</span>
+          </div>
+          <h1>专注<span class="hl">互联网岗位</span><br>应届生求职辅导</h1>
+          <p class="lead">面向 QS50 海外硕士 &amp; 国内 211/985 硕士，覆盖 27/28/29 三届求职需求，1v1 语音经历挖掘 + 专业简历输出，帮你拿到心仪的互联网实习与校招 Offer。</p>
+          <button class="btn btn-primary btn-lg" data-action="qr">添加顾问微信</button>
+        </div>
+        <div class="hero-visual">
+          <img src="assets/img/hero-dashboard.svg" alt="得欧求职辅导服务示意" width="560" height="420">
+        </div>
+      </div>
+    </section>
+
+    <!-- 五大核心方向 -->
+    <section class="section white">
+      <div class="container">
+        <div class="eyebrow">CORE DIRECTIONS</div>
+        <h2 class="section-title">五大核心求职方向</h2>
+        <p class="section-sub">覆盖互联网非技术核心岗位，按方向定制辅导方案</p>
+        <div class="tracks-grid" id="tracksGrid"></div>
+      </div>
+    </section>
+
+    <!-- 目标合作企业 -->
+    <section class="section">
+      <div class="container">
+        <div class="eyebrow">TARGET COMPANIES</div>
+        <h2 class="section-title">目标合作企业</h2>
+        <p class="section-sub">学员 Offer 覆盖国内一线互联网大厂</p>
+        <div class="companies-grid" id="companiesGrid"></div>
+        <p class="companies-note" id="companiesNote"></p>
+      </div>
+    </section>
+
+    <!-- 二维码转化卡 -->
+    <section class="qr-cta">
+      <div class="container">
+        <div class="qr-cta-card">
+          <div>
+            <h2>不确定自己适合哪个方向？</h2>
+            <p class="desc">添加求职顾问微信，获得 15 分钟 1v1 免费职业诊断，帮你明确定位、规划路径。</p>
+            <div class="qr-cta-actions">
+              <button class="btn btn-primary btn-lg" data-action="qr">添加顾问微信</button>
+              <a class="btn btn-outline btn-lg" href="service.html">了解服务流程</a>
+            </div>
+          </div>
+          <div class="qr-box">
+            <div class="qr-img"><img src="assets/img/qr-wechat.svg" alt="得欧求职顾问微信二维码"></div>
+            <div class="qr-caption">得欧求职顾问 · 扫码添加</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" aria-label="得欧求职首页">
+            <svg class="brand-logo" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <defs><linearGradient id="blg-f" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#4f46e5"/>
+              </linearGradient></defs>
+              <rect width="40" height="40" rx="11" fill="url(#blg-f)"/>
+              <path d="M13 27V13h7.2c4 0 6.8 2.7 6.8 7s-2.8 7-6.8 7H13zm4-3.4h3c2.1 0 3.2-1.4 3.2-3.6s-1.1-3.6-3.2-3.6h-3v7.2z" fill="#fff"/>
+            </svg>
+            <div>
+              <div class="brand-name">得欧求职</div>
+              <div class="brand-en">DEOU CAREER</div>
+            </div>
+          </a>
+          <p>专注互联网岗位应届生求职辅导，用专业方法帮每一位同学拿到心仪的Offer。</p>
+        </div>
+        <div>
+          <h4>服务方向</h4>
+          <ul>
+            <li><a href="directions.html#pm">产品经理</a></li>
+            <li><a href="directions.html#ops">运营</a></li>
+            <li><a href="directions.html#data">数据分析</a></li>
+            <li><a href="directions.html#market">市场营销</a></li>
+            <li><a href="directions.html#ba">商业分析</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>了解更多</h4>
+          <ul>
+            <li><a href="cases.html">服务案例</a></li>
+            <li><a href="lecturers.html">讲师团队</a></li>
+            <li><a href="about.html">关于我们</a></li>
+            <li><button data-action="doc">常见问题</button></li>
+          </ul>
+        </div>
+        <div>
+          <h4>联系我们</h4>
+          <ul>
+            <li><button data-action="qr">企业微信咨询</button></li>
+            <li>邮箱：hello@deoucareer.com</li>
+            <li>工作时间：10:00-20:00</li>
+            <li><button data-action="qr">商务合作</button></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 得欧求职 Deou Career. All rights reserved.</span>
+        <div class="links">
+          <button data-action="doc">用户协议</button>
+          <button data-action="doc">隐私政策</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

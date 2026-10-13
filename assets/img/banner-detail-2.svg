@@ -1,0 +1,35 @@
+<!-- Banner 详情图（占位示意，竖版 9:16）：秋季校招冲刺计划 · 运营可在配置后台替换 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 960" fill="none">
+  <rect width="540" height="960" rx="14" fill="#eff6ff"/>
+  <rect x="36" y="34" width="10" height="46" rx="5" fill="#2563eb"/>
+  <text x="62" y="56" fill="#1e3a8a" font-size="24" font-weight="800" font-family="PingFang SC, Microsoft YaHei, sans-serif">秋季校招冲刺计划</text>
+  <text x="62" y="84" fill="#64748b" font-size="13" font-family="PingFang SC, Microsoft YaHei, sans-serif">27届专属 · 示意图（后台可替换为 9:16 活动长图）</text>
+  <rect x="392" y="38" width="112" height="34" rx="17" fill="#e02e24"/>
+  <text x="418" y="61" fill="#ffffff" font-size="14" font-weight="800" font-family="PingFang SC, Microsoft YaHei, sans-serif">限时优惠</text>
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif">
+    <rect x="36" y="116" width="468" height="140" rx="12" fill="#ffffff"/>
+    <rect x="60" y="140" width="52" height="24" rx="12" fill="#dbeafe"/>
+    <text x="72" y="157" fill="#2563eb" font-size="13" font-weight="700">8月</text>
+    <text x="60" y="196" fill="#1e293b" font-size="18" font-weight="700">经历梳理与定位</text>
+    <text x="60" y="222" fill="#64748b" font-size="13">简历初稿 · 方向锁定 · 网申清单制定</text>
+    <rect x="36" y="276" width="468" height="140" rx="12" fill="#ffffff"/>
+    <rect x="60" y="300" width="52" height="24" rx="12" fill="#e0e7ff"/>
+    <text x="72" y="317" fill="#4f46e5" font-size="13" font-weight="700">9月</text>
+    <text x="60" y="356" fill="#1e293b" font-size="18" font-weight="700">网申与笔试冲刺</text>
+    <text x="60" y="382" fill="#64748b" font-size="13">笔试题库刷题 · 测评辅导 · 简历持续迭代</text>
+    <rect x="36" y="436" width="468" height="140" rx="12" fill="#ffffff"/>
+    <rect x="60" y="460" width="52" height="24" rx="12" fill="#fef3c7"/>
+    <text x="70" y="477" fill="#b45309" font-size="13" font-weight="700">10月</text>
+    <text x="60" y="516" fill="#1e293b" font-size="18" font-weight="700">面试实战冲刺</text>
+    <text x="60" y="542" fill="#64748b" font-size="13">N 轮模拟面试复盘 · Offer 比较与选择</text>
+    <rect x="36" y="596" width="468" height="130" rx="12" fill="#ffffff"/>
+    <text x="60" y="640" fill="#1e3a8a" font-size="18" font-weight="800">1V1 全程陪跑</text>
+    <text x="60" y="668" fill="#64748b" font-size="13">专属导师 · 每周固定语音复盘</text>
+    <text x="60" y="690" fill="#64748b" font-size="13">投递进度全程跟进到 Offer</text>
+    <rect x="36" y="746" width="468" height="130" rx="12" fill="#1e3a8a"/>
+    <text x="60" y="790" fill="#ffffff" font-size="18" font-weight="800">冲刺保障</text>
+    <text x="60" y="818" fill="#c7d2fe" font-size="13">未进面试免费延长陪跑周期</text>
+    <text x="60" y="840" fill="#c7d2fe" font-size="13">详情以顾问微信最终口径为准</text>
+  </g>
+  <text x="270" y="920" fill="#94a3b8" font-size="12" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif">示意图 · 实际内容以配置后台上传图片为准</text>
+</svg>

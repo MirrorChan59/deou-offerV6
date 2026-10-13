@@ -1,0 +1,24 @@
+<!-- Banner 插图：秋季校招冲刺（运营可在配置后台替换） -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 300" fill="none">
+  <rect width="380" height="300" rx="16" fill="rgba(255,255,255,.14)"/>
+  <rect x="1" y="1" width="378" height="298" rx="15" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
+  <!-- 靶心 -->
+  <circle cx="190" cy="150" r="86" fill="rgba(255,255,255,.92)"/>
+  <circle cx="190" cy="150" r="86" stroke="#1d4ed8" stroke-width="3.5" fill="none"/>
+  <circle cx="190" cy="150" r="60" stroke="#3b82f6" stroke-width="3" fill="none"/>
+  <circle cx="190" cy="150" r="34" stroke="#60a5fa" stroke-width="3" fill="none"/>
+  <circle cx="190" cy="150" r="12" fill="#2563eb"/>
+  <!-- 箭 -->
+  <g transform="rotate(-8 190 150)">
+    <line x1="196" y1="144" x2="300" y2="52" stroke="#f59e0b" stroke-width="7" stroke-linecap="round"/>
+    <polygon points="300,52 268,56 292,80" fill="#f59e0b"/>
+    <path d="M262 88 l14 -4 -4 14 z M246 104 l14 -4 -4 14 z" fill="#fbbf24"/>
+  </g>
+  <!-- 冲刺速度线 -->
+  <line x1="40" y1="90" x2="96" y2="90" stroke="rgba(255,255,255,.7)" stroke-width="5" stroke-linecap="round"/>
+  <line x1="52" y1="120" x2="108" y2="120" stroke="rgba(255,255,255,.5)" stroke-width="5" stroke-linecap="round"/>
+  <line x1="36" y1="210" x2="92" y2="210" stroke="rgba(255,255,255,.6)" stroke-width="5" stroke-linecap="round"/>
+  <!-- 星星 -->
+  <path d="M320 210 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3 z" fill="#fde68a"/>
+  <circle cx="316" cy="248" r="4" fill="#fff" opacity=".7"/>
+</svg>

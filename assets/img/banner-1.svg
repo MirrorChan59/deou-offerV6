@@ -1,0 +1,29 @@
+<!-- Banner 插图：留学生回国求职（运营可在配置后台替换） -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 300" fill="none">
+  <rect width="380" height="300" rx="16" fill="rgba(255,255,255,.14)"/>
+  <rect x="1" y="1" width="378" height="298" rx="15" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
+  <!-- 地球 -->
+  <circle cx="190" cy="140" r="72" fill="rgba(255,255,255,.92)"/>
+  <ellipse cx="190" cy="140" rx="72" ry="28" stroke="#2563eb" stroke-width="3" fill="none"/>
+  <ellipse cx="190" cy="140" rx="28" ry="72" stroke="#2563eb" stroke-width="3" fill="none"/>
+  <circle cx="190" cy="140" r="72" stroke="#2563eb" stroke-width="3.5" fill="none"/>
+  <line x1="118" y1="140" x2="262" y2="140" stroke="#2563eb" stroke-width="3"/>
+  <!-- 毕业帽 -->
+  <g transform="translate(236 56)">
+    <polygon points="40,0 80,18 40,36 0,18" fill="#fbbf24"/>
+    <path d="M18 24v14c0 6 10 12 22 12s22-6 22-12V24" fill="#f59e0b"/>
+    <line x1="80" y1="18" x2="80" y2="44" stroke="#fbbf24" stroke-width="3"/>
+    <circle cx="80" cy="48" r="5" fill="#fbbf24"/>
+  </g>
+  <!-- 机票/纸飞机 -->
+  <g transform="translate(64 200)">
+    <path d="M0 20 L86 0 L58 52 L40 30 Z" fill="#fff"/>
+    <path d="M40 30 L58 52 L48 24 Z" fill="#bfdbfe"/>
+    <path d="M0 20 L86 0 L48 24 Z" fill="#dbeafe"/>
+  </g>
+  <!-- 星星 -->
+  <circle cx="86" cy="72" r="4" fill="#fff" opacity=".8"/>
+  <circle cx="320" cy="220" r="5" fill="#fff" opacity=".6"/>
+  <circle cx="60" cy="130" r="3" fill="#fff" opacity=".7"/>
+  <path d="M300 90 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3 z" fill="#fde68a"/>
+</svg>
