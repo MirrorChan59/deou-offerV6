@@ -203,6 +203,16 @@ ul { list-style: none; }
 .banner-dots button { width: 24px; height: 6px; border-radius: 99px; background: rgba(255,255,255,.4); transition: all .25s; }
 .banner-dots button.active { width: 34px; background: #fff; }
 
+/* 配图铺满模式：图片整幅铺底 + 白色柔光层，文字转为深色保证可读 */
+.banner-bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.banner-bg::after { content: ""; position: absolute; inset: 0; background: rgba(255, 255, 255, .45); }
+.banner-slide.has-image .banner-inner { color: #0f172a; }
+.banner-slide.has-image .banner-tag { background: var(--blue); border-color: transparent; color: #fff; backdrop-filter: none; }
+.banner-slide.has-image .banner-sub { color: rgba(15, 23, 42, .72); }
+.banner-slide.has-image .banner-cta { background: var(--blue); color: #fff; }
+.banner-carousel.light-mode .banner-dots button { background: rgba(15, 23, 42, .22); }
+.banner-carousel.light-mode .banner-dots button.active { background: var(--blue); }
+
 /* ---------- 首页 Hero ---------- */
 .hero { padding: 72px 0 88px; }
 .hero .container { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; }
