@@ -41,9 +41,19 @@
     return true;
   }
 
+  /* 合作企业：按名称对位合并（远程字段为空时保留本地值，如未上传图标则沿用本地品牌图标） */
   function applyCompanies(list) {
     if (!Array.isArray(list) || !list.length || typeof COMPANIES === "undefined") return false;
-    COMPANIES.splice.apply(COMPANIES, [0, COMPANIES.length].concat(list));
+    var mapped = list.map(function (c, i) {
+      var local = COMPANIES.filter(function (x) { return x.name === c.name; })[0] || COMPANIES[i] || {};
+      return {
+        name: c.name || local.name || "",
+        product: c.product || local.product || "",
+        color: c.color || local.color || "#2563eb",
+        icon: c.icon || local.icon || "",
+      };
+    });
+    COMPANIES.splice.apply(COMPANIES, [0, COMPANIES.length].concat(mapped));
     return true;
   }
 
@@ -68,6 +78,9 @@
   function applyChannels(list) {
     if (!Array.isArray(list)) return false;
     window.DEOU_CHANNELS = list;
+    if (typeof applyChannelQr === "function") {
+      try { applyChannelQr(); } catch (e) { /* 页面静态二维码更新失败不影响其他模块 */ }
+    }
     return false; /* 渠道数据供弹窗与后台消费，无需重渲染页面区块 */
   }
 

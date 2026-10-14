@@ -100,6 +100,47 @@ ul { list-style: none; }
 .main-nav a.active { background: #fff; color: var(--blue); box-shadow: 0 2px 8px rgba(15,23,42,.08); }
 .header-actions { display: flex; gap: 10px; align-items: center; }
 
+/* ---------- 移动端抽屉导航（默认隐藏，≤1024px 由媒体查询启用） ---------- */
+.nav-toggle {
+  display: none;
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  flex: 0 0 42px;
+}
+.nav-toggle span { display: block; width: 18px; height: 2px; border-radius: 2px; background: var(--ink); transition: all .25s; }
+.nav-mask {
+  position: fixed; inset: 0; z-index: 98;
+  background: rgba(15,23,42,.38);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+}
+.nav-drawer {
+  position: fixed; top: 0; right: 0; z-index: 99;
+  width: min(76vw, 300px); height: 100vh; height: 100dvh;
+  background: #fff;
+  box-shadow: -8px 0 30px rgba(15,23,42,.12);
+  transform: translateX(100%);
+  transition: transform .28s ease;
+  padding: 92px 22px 30px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.nav-drawer a { padding: 13px 16px; border-radius: 12px; font-size: 16px; font-weight: 600; color: var(--ink-2); }
+.nav-drawer a:hover { background: #f1f5fb; color: var(--blue); }
+.nav-drawer a.active { background: #eaf1fe; color: var(--blue); }
+body.nav-open { overflow: hidden; }
+body.nav-open .nav-mask { opacity: 1; pointer-events: auto; }
+body.nav-open .nav-drawer { transform: translateX(0); }
+body.nav-open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+body.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
 /* ---------- 按钮 ---------- */
 .btn {
   display: inline-flex;
@@ -559,6 +600,7 @@ ul { list-style: none; }
 }
 .partner-band .eyebrow { color: rgba(255,255,255,.75); }
 .partner-band h2 { font-size: 32px; font-weight: 900; margin-top: 12px; }
+.partner-band h2 .m-break { display: inline; }
 .partner-band p { color: rgba(255,255,255,.85); margin-top: 14px; max-width: 640px; margin-left: auto; margin-right: auto; }
 .partner-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
 .partner-card { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 32px 34px; }
@@ -722,18 +764,80 @@ ul { list-style: none; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .mbti-grid { grid-template-columns: 1fr 1fr; }
   .main-nav { display: none; }
+  .nav-toggle { display: inline-flex; }
 }
 @media (max-width: 640px) {
   .section-title { font-size: 30px; }
   .hero h1 { font-size: 34px; }
   .banner-slide { padding: 48px 28px; min-height: 320px; }
   .banner-title { font-size: 28px; }
-  .tracks-grid, .companies-grid, .lecturer-grid, .mbti-grid, .salary-cards, .school-grid, .partner-grid, .dir-stats { grid-template-columns: 1fr; }
-  .case-row { grid-template-columns: 1.4fr 1fr 1fr; font-size: 13px; }
+  .lecturer-grid, .mbti-grid, .salary-cards, .school-grid, .partner-grid, .dir-stats { grid-template-columns: 1fr; }
+  /* 方向卡/企业卡并排：一排两个，收紧卡片内距 */
+  .tracks-grid, .companies-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 36px; }
+  .track-card { padding: 18px 14px; }
+  .track-icon { width: 40px; height: 40px; margin-bottom: 12px; border-radius: 12px; }
+  .track-icon svg { width: 20px; height: 20px; }
+  .track-card h3 { font-size: 15px; margin-bottom: 6px; }
+  .track-card p { font-size: 11.5px; line-height: 1.65; }
+  .company-card { padding: 18px 8px 14px; }
+  .company-logo, .company-logo-img { width: 44px; height: 44px; margin-bottom: 8px; border-radius: 12px; }
+  .company-card h4 { font-size: 13.5px; }
+  .company-card span { font-size: 11px; }
+  /* 案例列表：4 列对齐 + 整体再收紧一档（移动端用户反馈仍松散） */
+  .case-filters { gap: 8px; margin: 18px 0 14px; }
+  .filter-pill { padding: 7px 16px; font-size: 12.5px; }
+  .case-table { border-radius: 16px; }
+  .case-row { grid-template-columns: 1.5fr 1fr 1fr auto; font-size: 11px; gap: 4px; padding: 10px 12px; }
+  .case-row.head { padding: 9px 12px; font-size: 10.5px; }
   .case-row .hide-m { display: none; }
-  .qr-cta-card, .join-card, .dir-cta, .cta-band-card { grid-template-columns: 1fr; padding: 40px 28px; flex-direction: column; text-align: center; }
+  .case-person { gap: 7px; }
+  .case-avatar { width: 30px; height: 30px; font-size: 12px; }
+  .case-person b { font-size: 12px; }
+  .case-person span { font-size: 10.5px; }
+  .tag-pill { padding: 2px 7px; font-size: 10.5px; }
+  .case-offer { white-space: nowrap; font-size: 11px; }
+  .case-row .btn { padding: 4px 8px; font-size: 10.5px; white-space: nowrap; }
+  .lock-notice { flex-direction: column; gap: 10px; padding: 14px 20px; margin-top: 20px; text-align: center; font-size: 13px; }
+  .lock-notice .btn { white-space: nowrap; }
+  .case-more { margin-top: 20px; font-size: 13px; }
+  .case-more .btn { white-space: nowrap; }
+  .qr-cta-card, .join-card, .dir-cta, .cta-band-card { grid-template-columns: 1fr; padding: 36px 20px; flex-direction: column; text-align: center; }
+  /* 首页转化卡：标题缩小不折行，按钮并排不折行 */
+  .qr-cta-card h2 { font-size: 21px; text-wrap: balance; }
+  .qr-cta-card .desc { font-size: 14px; margin: 12px auto 22px; }
+  .qr-cta-actions { flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .qr-cta-actions .btn { white-space: nowrap; padding: 11px 18px; font-size: 14px; }
+  /* 蓝色 CTA 带（服务/讲师/方向页）：标题缩小不折行 */
+  .cta-band-card h2 { font-size: 21px; text-wrap: balance; }
+  .cta-band-card p { font-size: 14px; }
+  .cta-band-card .btn { white-space: nowrap; padding: 11px 20px; font-size: 14px; }
+  .dir-cta h2 { font-size: 19px; text-wrap: balance; }
+  .dir-cta p { font-size: 13px; }
+  .dir-cta .btn { white-space: nowrap; padding: 11px 20px; font-size: 14px; }
+  /* 关于页：合伙人标题收紧行宽，三步卡改竖排避免逐字折行 */
+  .partner-band h2 { font-size: 22px; text-wrap: balance; }
+  .partner-band h2 .m-break { display: block; }
+  .partner-band p { font-size: 14px; }
+  .join-card h2 { font-size: 21px !important; text-wrap: balance; }
+  .join-steps { flex-direction: column; gap: 8px; margin-top: 20px; }
+  .join-step { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; }
+  .join-step b { font-size: 17px; flex-shrink: 0; }
+  .join-step span { font-size: 13px; text-align: left; }
+  .join-steps .arrow { display: none; }
+  /* 方向详情页：双列信息竖排，避免窄列内文字折行 */
+  .subdir-cols { grid-template-columns: 1fr; }
+  .subdir-col { padding: 14px 16px; }
+  .subdir-col b { font-size: 13.5px; }
+  .subdir-col p { font-size: 12.5px; }
   .footer-grid { grid-template-columns: 1fr; }
-  .header-actions .btn-outline { display: none; }
+  /* 移动端头部：登录/预约双按钮保留并缩小，汉堡按钮压缩高度 */
+  .site-header .container { height: 60px; }
+  .site-header .brand-logo-img { height: 32px; }
+  .header-actions { gap: 8px; }
+  .header-actions .btn { padding: 8px 14px; font-size: 13px; gap: 4px; }
+  .nav-toggle { width: 38px; height: 38px; flex-basis: 38px; }
+  /* 移动端 Banner：隐藏左右箭头（避免压住文字），保留圆点+手势滑动 */
+  .banner-arrow { display: none; }
 }
 
 /* ---------- 品牌 logo（预设 DO 组合标） ---------- */

@@ -77,6 +77,17 @@ function showComingSoon(feature) {
     <div style="margin-top:22px"><button class="btn btn-primary" onclick="document.querySelector('.modal-mask').classList.remove('show');showQrModal()">添加顾问微信</button></div>`);
 }
 
+/* ---------- 页面静态二维码与「预约咨询」弹窗同源 ----------
+ * 带 data-qr-channel="<渠道code>" 的 <img>，在渠道配置加载后替换为对应渠道二维码；
+ * 渠道未配置二维码图片时保留 <img> 原始 src（本地真实二维码兜底）。 */
+function applyChannelQr() {
+  var channels = window.DEOU_CHANNELS || [];
+  document.querySelectorAll("img[data-qr-channel]").forEach(function (img) {
+    var ch = channels.filter(function (c) { return c.code === img.dataset.qrChannel && c.enabled && c.qrImage; })[0];
+    if (ch && img.getAttribute("src") !== ch.qrImage) img.src = ch.qrImage;
+  });
+}
+
 /* ---------- 首页：Banner 轮播 ---------- */
 function showBannerDetail(i) {
   const b = BANNERS[i];
@@ -128,6 +139,15 @@ function initBanner() {
     root.querySelector(".prev").addEventListener("click", () => { go(root._cur - 1); auto(); });
     root.querySelector(".next").addEventListener("click", () => { go(root._cur + 1); auto(); });
     dots.addEventListener("click", (e) => { if (e.target.dataset.i) { go(+e.target.dataset.i); auto(); } });
+    /* 移动端手势滑动（移动端已隐藏左右箭头，滑动+圆点为主交互） */
+    let touchX = null;
+    root.addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+    root.addEventListener("touchend", (e) => {
+      if (touchX == null) return;
+      const dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 40) { go(root._cur + (dx < 0 ? 1 : -1)); auto(); }
+      touchX = null;
+    }, { passive: true });
   }
   go(0); auto();
 }
@@ -359,16 +379,33 @@ function initAbout() {
     <div class="school-card"><span class="emo">🎓</span><div><b>${s.name}</b><span>${s.note}</span></div></div>`).join("");
 }
 
+/* ---------- 全局：移动端抽屉导航 ---------- */
+function initMobileNav() {
+  const toggle = document.querySelector(".nav-toggle");
+  const mask = document.querySelector(".nav-mask");
+  const drawer = document.querySelector(".nav-drawer");
+  if (!toggle || !drawer) return;
+  function setOpen(open) {
+    document.body.classList.toggle("nav-open", open);
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+  if (mask) mask.addEventListener("click", () => setOpen(false));
+  drawer.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+}
+
 /* ---------- 全局：导航高亮 + 按钮接线 ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   const page = document.body.dataset.page;
-  document.querySelectorAll(".main-nav a").forEach((a) => {
+  document.querySelectorAll(".main-nav a, .nav-drawer a").forEach((a) => {
     if (a.dataset.nav === page) a.classList.add("active");
   });
   document.querySelectorAll("[data-action='qr']").forEach((b) => b.addEventListener("click", showQrModal));
   document.querySelectorAll("[data-action='login']").forEach((b) => b.addEventListener("click", () => showComingSoon("登录 / 注册")));
   document.querySelectorAll("[data-action='doc']").forEach((b) => b.addEventListener("click", () => showComingSoon(b.textContent.trim())));
   initBanner();
+  initMobileNav();
+  applyChannelQr();
   initHomeSections();
   initProcess();
   initCases();
