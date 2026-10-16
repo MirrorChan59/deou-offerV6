@@ -83,6 +83,7 @@ function toFields(module, rec, i) {
         "标签": rec.tag || "",
         "背景渐变": rec.gradient || "",
         "配图": attach(rec.imageToken),
+        "移动端配图": attach(rec.mobileImageToken),
         "详情图片": attach(rec.detailImageToken),
         "排序": i + 1,
         "是否上架": true,

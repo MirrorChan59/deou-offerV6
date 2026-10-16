@@ -101,7 +101,7 @@ function initBanner() {
   if (!root) return;
   const track = root.querySelector(".banner-track");
   track.innerHTML = BANNERS.map((b, i) => `
-    <div class="banner-slide${b.image ? " has-image" : ""}" style="background:${b.gradient}">
+    <div class="banner-slide${b.image ? " has-image" : ""}${b.mobileImage ? " has-mobile-bg" : ""}" style="background:${b.gradient}">
       ${b.image
         ? `<div class="banner-bg" style="background-image:url('${b.image}')"></div>`
         : `<svg class="deco" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice">
@@ -109,6 +109,7 @@ function initBanner() {
         <circle cx="1060" cy="300" r="90" fill="rgba(255,255,255,.05)"/>
         <circle cx="140" cy="340" r="70" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="14" stroke-dasharray="2 22" stroke-linecap="round"/>
       </svg>`}
+      ${b.mobileImage ? `<div class="banner-bg banner-bg-m" style="background-image:url('${b.mobileImage}')"></div>` : ""}
       <div class="banner-inner">
         <span class="banner-tag">${b.tag}</span>
         <h1 class="banner-title">${b.title}</h1>
@@ -130,7 +131,7 @@ function initBanner() {
   function go(i) {
     root._cur = (i + BANNERS.length) % BANNERS.length;
     track.style.transform = `translateX(-${root._cur * 100}%)`;
-    root.classList.toggle("light-mode", !!BANNERS[root._cur].image);
+    root.classList.toggle("light-mode", !!(BANNERS[root._cur].image || BANNERS[root._cur].mobileImage));
     dots.querySelectorAll("button").forEach((d, j) => d.classList.toggle("active", j === root._cur));
   }
   function auto() { clearInterval(root._timer); root._timer = setInterval(() => go(root._cur + 1), 5000); }

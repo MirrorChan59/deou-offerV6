@@ -755,6 +755,11 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate
 .modal .detail-img { margin-top: 18px; text-align: center; }
 .modal .detail-img img { display: inline-block; width: auto; max-width: 100%; max-height: 72vh; border-radius: 14px; border: 1px solid #eef1f6; }
 
+/* ---------- 端型显隐工具类：m-only 仅移动端显示，d-only 仅桌面端显示 ---------- */
+.m-only { display: none !important; }
+/* Banner 移动端配图：桌面端恒隐藏，移动端（有配置时）替换 web 图 */
+.banner-bg-m { display: none; }
+
 /* ---------- 响应式 ---------- */
 @media (max-width: 1024px) {
   .tracks-grid, .companies-grid { grid-template-columns: repeat(3, 1fr); }
@@ -767,22 +772,31 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate
   .nav-toggle { display: inline-flex; }
 }
 @media (max-width: 640px) {
+  /* 端型显隐切换 */
+  .d-only { display: none !important; }
+  .m-only { display: block !important; }
   .section-title { font-size: 30px; }
   .hero h1 { font-size: 34px; }
+  /* 首页 Hero：隐藏配图，移动端双按钮并排 */
+  .hero-visual { display: none; }
+  .hero-actions.m-only { display: flex !important; gap: 12px; flex-wrap: wrap; }
+  .hero-actions .btn { white-space: nowrap; padding: 12px 18px; font-size: 14px; }
   .banner-slide { padding: 48px 28px; min-height: 320px; }
   .banner-title { font-size: 28px; }
-  .lecturer-grid, .mbti-grid, .salary-cards, .school-grid, .partner-grid, .dir-stats { grid-template-columns: 1fr; }
-  /* 方向卡/企业卡并排：一排两个，收紧卡片内距 */
-  .tracks-grid, .companies-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 36px; }
+  .lecturer-grid, .salary-cards, .school-grid, .partner-grid, .dir-stats { grid-template-columns: 1fr; }
+  /* 方向卡并排：一排两个，收紧卡片内距 */
+  .tracks-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 36px; }
   .track-card { padding: 18px 14px; }
   .track-icon { width: 40px; height: 40px; margin-bottom: 12px; border-radius: 12px; }
   .track-icon svg { width: 20px; height: 20px; }
   .track-card h3 { font-size: 15px; margin-bottom: 6px; }
   .track-card p { font-size: 11.5px; line-height: 1.65; }
-  .company-card { padding: 18px 8px 14px; }
-  .company-logo, .company-logo-img { width: 44px; height: 44px; margin-bottom: 8px; border-radius: 12px; }
-  .company-card h4 { font-size: 13.5px; }
-  .company-card span { font-size: 11px; }
+  /* 目标合作企业：5 列两行小卡片（与桌面端行列一致，整体缩小） */
+  .companies-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 28px; }
+  .company-card { padding: 10px 2px 8px; border-radius: 12px; }
+  .company-logo, .company-logo-img { width: 30px; height: 30px; margin-bottom: 6px; border-radius: 8px; }
+  .company-card h4 { font-size: 10.5px; white-space: nowrap; }
+  .company-card span { font-size: 9.5px; white-space: nowrap; }
   /* 案例列表：4 列对齐 + 整体再收紧一档（移动端用户反馈仍松散） */
   .case-filters { gap: 8px; margin: 18px 0 14px; }
   .filter-pill { padding: 7px 16px; font-size: 12.5px; }
@@ -829,7 +843,37 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate
   .subdir-col { padding: 14px 16px; }
   .subdir-col b { font-size: 13.5px; }
   .subdir-col p { font-size: 12.5px; }
-  .footer-grid { grid-template-columns: 1fr; }
+  /* 方向详情页：MBTI 卡片移动端 2 列横排（原为纵向单列堆叠） */
+  .mbti-grid { grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+  .mbti-card { padding: 16px 14px; border-radius: 14px; }
+  .mbti-card b.type { font-size: 17px; }
+  .mbti-card .name { font-size: 12.5px; margin: 3px 0 7px; }
+  .mbti-card p { font-size: 11px; line-height: 1.6; }
+  /* 方向详情页：薪资参考压缩字号与间距，移动端一行放下 */
+  .subdir { padding: 24px 20px; border-radius: 18px; }
+  .salary-row { flex-wrap: nowrap; gap: 10px; padding: 12px 14px; }
+  .salary-row .lab { font-size: 11.5px; flex-shrink: 0; }
+  .salary-row .item { white-space: nowrap; }
+  .salary-row .item b { font-size: 13px; }
+  .salary-row .item span { font-size: 10px; margin-left: 3px; }
+  /* 服务流程页：每个步骤的三张插图移动端一行横排 */
+  .step-media { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .step-shot { border-radius: 12px; }
+  .step-shot .shot-tag { top: 6px; right: 6px; padding: 2px 8px; font-size: 10px; }
+  .step-shot .shot-caption { padding: 6px 8px; }
+  .step-shot .shot-caption b { font-size: 10.5px; }
+  .step-shot .shot-caption span { display: none; }
+  /* 页脚：品牌块独占一行，链接组两列排布，整体收紧行距 */
+  .site-footer { padding: 48px 0 0; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px 16px; }
+  .footer-brand { grid-column: 1 / -1; }
+  .footer-brand p { font-size: 13px; margin-top: 14px; }
+  .site-footer h4 { margin-bottom: 14px; font-size: 15px; }
+  .site-footer li { margin-bottom: 8px; font-size: 13px; }
+  .site-footer li a, .site-footer li button { font-size: 13px; }
+  /* 联系我们：移动端不展示邮箱 */
+  .footer-contact-mail { display: none; }
+  .footer-bottom .links button { white-space: nowrap; }
   /* 移动端头部：登录/预约双按钮保留并缩小，汉堡按钮压缩高度 */
   .site-header .container { height: 60px; }
   .site-header .brand-logo-img { height: 32px; }
@@ -838,6 +882,12 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate
   .nav-toggle { width: 38px; height: 38px; flex-basis: 38px; }
   /* 移动端 Banner：隐藏左右箭头（避免压住文字），保留圆点+手势滑动 */
   .banner-arrow { display: none; }
+  /* Banner 移动端配图：配置了 mobileImage 时替换 web 背景图 */
+  .banner-slide.has-mobile-bg .banner-bg:not(.banner-bg-m) { display: none; }
+  .banner-slide.has-mobile-bg .banner-bg-m { display: block; }
+  /* 转化卡二维码：移动端居中 */
+  .qr-cta-card .qr-box { margin: 8px auto 0; }
+  .qr-cta-card .qr-img { margin: 0 auto; }
 }
 
 /* ---------- 品牌 logo（预设 DO 组合标） ---------- */

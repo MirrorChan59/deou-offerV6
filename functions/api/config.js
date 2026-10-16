@@ -74,6 +74,7 @@ function buildBanners(items) {
       subtitle: txt(f["副标题"]),
       gradient: txt(f["背景渐变"]),
       image: mediaUrl(f["配图"]),
+      mobileImage: mediaUrl(f["移动端配图"]),
       detailImage: mediaUrl(f["详情图片"]),
     };
   });

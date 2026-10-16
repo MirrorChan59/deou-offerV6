@@ -6,7 +6,9 @@
 
 /* ---------- 首页 Banner ----------
  * detailImage：「了解详情」弹窗图片（运营可在配置后台按 Banner 分别配置，建议竖版 9:16）。
- * 配置了 detailImage 的 Banner 才会展示「了解详情」按钮；留空则不展示。 */
+ * 配置了 detailImage 的 Banner 才会展示「了解详情」按钮；留空则不展示。
+ * mobileImage：移动端专用背景图（配置后台上传，建议竖版构图，宽度 ≥880px）。
+ * 配置后移动端用它替换 image；留空则移动端沿用 image。 */
 const BANNERS = [
   {
     tag: "留学生专享",
@@ -14,6 +16,7 @@ const BANNERS = [
     subtitle: "QS50硕士专属求职规划服务",
     gradient: "linear-gradient(120deg, #1e3a8a 0%, #4f46e5 60%, #6d28d9 100%)",
     image: "assets/img/banner-1.svg",
+    mobileImage: "",
     detailImage: "assets/img/banner-detail-1.svg",
   },
   {
@@ -22,6 +25,7 @@ const BANNERS = [
     subtitle: "27届校招1V1全程陪跑，限时优惠中",
     gradient: "linear-gradient(120deg, #1d4ed8 0%, #2563eb 55%, #4f46e5 100%)",
     image: "assets/img/banner-2.svg",
+    mobileImage: "",
     detailImage: "assets/img/banner-detail-2.svg",
   },
   {
@@ -30,6 +34,7 @@ const BANNERS = [
     subtitle: "零基础到拿到产品Offer，6周系统课程",
     gradient: "linear-gradient(120deg, #0e7490 0%, #0284c7 55%, #2563eb 100%)",
     image: "assets/img/banner-3.svg",
+    mobileImage: "",
     detailImage: "assets/img/banner-detail-3.svg",
   },
 ];

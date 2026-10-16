@@ -22,6 +22,7 @@
         subtitle: b.subtitle || local.subtitle || "",
         gradient: b.gradient || local.gradient || "linear-gradient(120deg, #1e3a8a 0%, #4f46e5 60%, #6d28d9 100%)",
         image: b.image || local.image || "",
+        mobileImage: b.mobileImage || local.mobileImage || "",
         detailImage: b.detailImage || local.detailImage || "",
       };
     });
