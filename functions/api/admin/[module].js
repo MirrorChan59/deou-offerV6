@@ -105,6 +105,11 @@ function toFields(module, rec, i) {
         "Offer": rec.offer || "****",
         "辅导类型": rec.service || "",
         "需登录查看": rec.locked !== false,
+        "详情图1": attach(rec.detailImageTokens && rec.detailImageTokens[0]),
+        "详情图2": attach(rec.detailImageTokens && rec.detailImageTokens[1]),
+        "详情图3": attach(rec.detailImageTokens && rec.detailImageTokens[2]),
+        "详情图4": attach(rec.detailImageTokens && rec.detailImageTokens[3]),
+        "详情图5": attach(rec.detailImageTokens && rec.detailImageTokens[4]),
         "是否上架": true,
         "排序": i + 1,
       });

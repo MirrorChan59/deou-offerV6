@@ -105,6 +105,7 @@ function buildCases(items) {
       service: txt(f["辅导类型"]),
       offer: txt(f["Offer"]),
       locked: f["需登录查看"] === true,
+      detailImages: [1, 2, 3, 4, 5].map((i) => mediaUrl(f["详情图" + i])).filter(Boolean),
     };
   });
 }

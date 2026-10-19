@@ -161,10 +161,10 @@ const PROCESS_STEPS = [
 /* ---------- 成功案例 ---------- */
 const CASE_FILTERS = ["全部", "产品经理", "运营", "市场", "数据分析", "商业分析"];
 const CASES = [
-  { surname: "林", name: "林同学", school: "清华大学", direction: "产品经理", year: "2024届", service: "全程辅导", offer: "字节跳动 · 32W", locked: false },
-  { surname: "王", name: "王同学", school: "北京大学", direction: "商业分析", year: "2024届", service: "全程辅导", offer: "麦肯锡 · 35W", locked: false },
-  { surname: "陈", name: "***", school: "***", direction: "数据分析", year: "2023届", service: "冲刺计划", offer: "****", locked: true },
-  { surname: "张", name: "***", school: "***", direction: "市场营销", year: "2024届", service: "面试+简历", offer: "****", locked: true },
+  { surname: "林", name: "林同学", school: "清华大学", direction: "产品经理", year: "2024届", service: "全程辅导", offer: "字节跳动 · 32W", locked: false, detailImages: [] },
+  { surname: "王", name: "王同学", school: "北京大学", direction: "商业分析", year: "2024届", service: "全程辅导", offer: "麦肯锡 · 35W", locked: false, detailImages: [] },
+  { surname: "陈", name: "***", school: "***", direction: "数据分析", year: "2023届", service: "冲刺计划", offer: "****", locked: true, detailImages: [] },
+  { surname: "张", name: "***", school: "***", direction: "市场营销", year: "2024届", service: "面试+简历", offer: "****", locked: true, detailImages: [] },
   { surname: "刘", name: "***", school: "***", direction: "运营", year: "2023届", service: "全程辅导", offer: "****", locked: true },
   { surname: "赵", name: "***", school: "***", direction: "商业分析", year: "2024届", service: "全程辅导", offer: "****", locked: true },
   { surname: "孙", name: "***", school: "***", direction: "内容运营", year: "2024届", service: "面试特训", offer: "****", locked: true },

@@ -76,6 +76,11 @@ function showComingSoon(feature) {
   showModal(`<h3>${feature || "登录"}</h3><p>该功能即将上线，敬请期待。<br>如需帮助可先添加顾问微信咨询。</p>
     <div style="margin-top:22px"><button class="btn btn-primary" onclick="document.querySelector('.modal-mask').classList.remove('show');showQrModal()">添加顾问微信</button></div>`);
 }
+/* 图片点击预览（服务流程配图等）：大图弹层，点击遮罩或 × 关闭 */
+function showImagePreview(src, alt) {
+  if (!src) return;
+  showModal(`<img class="preview-img" src="${src}" alt="${alt || "图片预览"}">`, "img-preview");
+}
 
 /* ---------- 页面静态二维码与「预约咨询」弹窗同源 ----------
  * 带 data-qr-channel="<渠道code>" 的 <img>，在渠道配置加载后替换为对应渠道二维码；
@@ -198,9 +203,8 @@ function initProcess() {
         <div class="step-media">
           ${s.shots.map((sh) => `
             <div class="step-shot">
-              <img src="${sh.img}" alt="${sh.caption}">
+              <img src="${sh.img}" alt="${sh.caption}" onclick="showImagePreview('${sh.img}', '${sh.caption}')">
               <span class="shot-tag">${sh.tag}</span>
-              <div class="shot-caption"><b>${sh.caption}</b><span>运营可替换</span></div>
             </div>`).join("")}
         </div>
       </div>
@@ -208,6 +212,25 @@ function initProcess() {
 }
 
 /* ---------- 成功案例页 ---------- */
+/* 案例详情弹层：文字信息 + 运营配置的详情图（最多 5 张，留空则跳过） */
+function showCaseDetail(i) {
+  const c = CASES[i];
+  if (!c) return;
+  const imgs = (c.detailImages || []).filter(Boolean);
+  showModal(`
+    <h3>案例详情</h3>
+    <div class="case-meta">
+      <div><span>学员</span><b>${c.name} · ${c.school}</b></div>
+      <div><span>目标方向</span><b>${c.direction}</b></div>
+      <div><span>届别</span><b>${c.year || "—"}</b></div>
+      <div><span>服务类型</span><b>${c.service || "—"}</b></div>
+      <div><span>Offer</span><b class="offer">${c.offer}</b></div>
+    </div>
+    ${imgs.length
+      ? `<div class="case-detail-imgs">${imgs.map((src, k) => `<img src="${src}" alt="${c.name}·案例详情图${k + 1}">`).join("")}</div>`
+      : ""}`,
+    "case-modal");
+}
 function initCases() {
   const filtersRoot = document.getElementById("caseFilters");
   const table = document.getElementById("caseTable");
@@ -237,7 +260,7 @@ function initCases() {
         <div class="case-offer">${c.offer}</div>
         <div style="text-align:right">${c.locked
           ? '<button class="btn btn-ghost-light" onclick="showComingSoon(\'登录查看完整案例\')">🔒 登录查看</button>'
-          : '<button class="btn btn-outline" onclick="showComingSoon(\'案例详情\')">查看详情 →</button>'}</div>
+          : `<button class="btn btn-outline" onclick="showCaseDetail(${CASES.indexOf(c)})">查看详情 →</button>`}</div>
       </div>`).join("");
     const unlocked = CASES.length;
     document.getElementById("caseTotal").textContent = `共 ${unlocked} 个成功案例 · 登录查看全部 ${unlocked} 个案例`;

@@ -403,7 +403,8 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate
 .step-feat .ico svg { width: 20px; height: 20px; stroke: var(--blue); }
 .step-feat strong { display: block; font-size: 15px; }
 .step-feat span { font-size: 13px; color: var(--ink-3); }
-.step-media { display: grid; gap: 16px; }
+.step-media { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.step-media .step-shot:first-child { grid-column: 1 / -1; }
 .step-shot {
   position: relative;
   border-radius: 18px;
@@ -422,12 +423,6 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate
   font-weight: 600;
   color: var(--blue);
 }
-.step-shot .shot-caption {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 16px; font-size: 13px;
-}
-.step-shot .shot-caption b { font-size: 13.5px; }
-.step-shot .shot-caption span { color: var(--ink-3); font-size: 12px; }
 
 /* ---------- CTA 卡片（子页底部通用） ---------- */
 .cta-band { padding: 24px 0 96px; }
@@ -754,6 +749,20 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate
 .modal-mask.img-modal .modal { max-width: 480px; text-align: left; padding: 30px 26px; }
 .modal .detail-img { margin-top: 18px; text-align: center; }
 .modal .detail-img img { display: inline-block; width: auto; max-width: 100%; max-height: 72vh; border-radius: 14px; border: 1px solid #eef1f6; }
+/* 图片点击预览弹层（服务流程配图等） */
+.step-shot img { cursor: zoom-in; }
+.modal-mask.img-preview .modal { max-width: 920px; width: auto; padding: 14px; }
+.modal .preview-img { display: block; width: auto; min-width: min(420px, 92vw); max-width: 100%; max-height: 82vh; object-fit: contain; border-radius: 12px; }
+/* 案例详情弹层（成功案例「查看详情」，文字信息 + 最多 5 张详情图） */
+.modal-mask.case-modal .modal { max-width: 560px; text-align: left; padding: 30px 28px; max-height: 86vh; overflow-y: auto; }
+.case-meta { margin-top: 16px; display: grid; gap: 10px; }
+.case-meta div { display: flex; justify-content: space-between; gap: 16px; font-size: 14px; }
+.case-meta span { color: var(--ink-3); flex-shrink: 0; }
+.case-meta b { font-weight: 700; text-align: right; }
+.case-meta .offer { color: var(--blue); }
+.case-detail-imgs { margin-top: 18px; display: grid; gap: 12px; }
+.case-detail-imgs img { display: block; width: 100%; border-radius: 12px; border: 1px solid #eef1f6; }
+.case-empty { margin-top: 16px; color: var(--ink-3); font-size: 13.5px; text-align: center; }
 
 /* ---------- 端型显隐工具类：m-only 仅移动端显示，d-only 仅桌面端显示 ---------- */
 .m-only { display: none !important; }
@@ -858,11 +867,9 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate
   .salary-row .item span { font-size: 10px; margin-left: 3px; }
   /* 服务流程页：每个步骤的三张插图移动端一行横排 */
   .step-media { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .step-media .step-shot:first-child { grid-column: auto; }
   .step-shot { border-radius: 12px; }
   .step-shot .shot-tag { top: 6px; right: 6px; padding: 2px 8px; font-size: 10px; }
-  .step-shot .shot-caption { padding: 6px 8px; }
-  .step-shot .shot-caption b { font-size: 10.5px; }
-  .step-shot .shot-caption span { display: none; }
   /* 页脚：品牌块独占一行，链接组两列排布，整体收紧行距 */
   .site-footer { padding: 48px 0 0; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px 16px; }
