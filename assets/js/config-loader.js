@@ -32,6 +32,7 @@
 
   function applyCases(list) {
     if (!Array.isArray(list) || !list.length || typeof CASES === "undefined") return false;
+    if (window.DEOU_CASES_UNLOCKED) return false; /* 已登录解锁完整案例，不用脱敏数据回灌 */
     CASES.splice.apply(CASES, [0, CASES.length].concat(list));
     return true;
   }

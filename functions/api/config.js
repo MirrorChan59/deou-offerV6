@@ -33,7 +33,7 @@ export async function onRequestGet(context) {
     const [banners, processSteps, cases, instructors, companies, channels] = await Promise.all([
       listRecords(env, TABLES.banners).then(buildBanners),
       listRecords(env, TABLES.process).then(buildProcess),
-      listRecords(env, TABLES.cases).then(buildCases),
+      listRecords(env, TABLES.cases).then((items) => buildCases(items, true)),
       listRecords(env, TABLES.instructors).then(buildInstructors),
       listRecords(env, TABLES.companies).then(buildCompanies),
       listRecords(env, TABLES.channels).then(buildChannels),
@@ -92,20 +92,24 @@ function buildProcess(items) {
   });
 }
 
-function buildCases(items) {
+/* maskLocked=true（公开接口 /api/config）时对「需登录查看」案例脱敏；
+ * maskLocked=false（登录接口 /api/cases）时返回完整内容。 */
+export function buildCases(items, maskLocked) {
   return items.filter(onShelf).sort(byOrder).map((r) => {
     const f = r.fields;
+    const locked = f["需登录查看"] === true;
+    const mask = !!maskLocked && locked;
     const name = txt(f["学员称呼"]) || "***";
     return {
-      surname: name[0] || "*",
-      name,
-      school: txt(f["学校"]) || "***",
+      surname: mask ? "*" : (name[0] || "*"),
+      name: mask ? "***" : name,
+      school: mask ? "***" : (txt(f["学校"]) || "***"),
       direction: selectOne(f["方向"]),
       year: txt(f["届别"]),
       service: txt(f["辅导类型"]),
-      offer: txt(f["Offer"]),
-      locked: f["需登录查看"] === true,
-      detailImages: [1, 2, 3, 4, 5].map((i) => mediaUrl(f["详情图" + i])).filter(Boolean),
+      offer: mask ? "****" : txt(f["Offer"]),
+      locked,
+      detailImages: mask ? [] : [1, 2, 3, 4, 5].map((i) => mediaUrl(f["详情图" + i])).filter(Boolean),
     };
   });
 }

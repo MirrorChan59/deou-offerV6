@@ -763,6 +763,18 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate
 .case-detail-imgs { margin-top: 18px; display: grid; gap: 12px; }
 .case-detail-imgs img { display: block; width: 100%; border-radius: 12px; border: 1px solid #eef1f6; }
 .case-empty { margin-top: 16px; color: var(--ink-3); font-size: 13.5px; text-align: center; }
+/* 登录 / 注册弹窗 */
+.modal-mask.auth-modal .modal { max-width: 420px; text-align: left; padding: 30px 28px; }
+.auth-tabs { display: flex; gap: 8px; margin-top: 16px; }
+.auth-tab { flex: 1; padding: 9px 0; border: 1px solid #e3e8f0; background: #f7f9fc; border-radius: 10px; font-size: 14px; color: var(--ink-3); cursor: pointer; }
+.auth-tab.on { background: var(--blue); color: #fff; border-color: var(--blue); }
+.auth-form { margin-top: 16px; display: grid; gap: 12px; }
+.auth-form input { padding: 12px 14px; border: 1px solid #e3e8f0; border-radius: 10px; font-size: 14.5px; font-family: inherit; }
+.auth-form input:focus { outline: none; border-color: var(--blue); }
+.auth-err { color: #dc2626; font-size: 13px; min-height: 18px; }
+.auth-submit { width: 100%; }
+.auth-submit:disabled { opacity: .6; cursor: not-allowed; }
+.auth-note { margin-top: 12px; font-size: 12px; color: var(--ink-3); text-align: center; }
 
 /* ---------- 端型显隐工具类：m-only 仅移动端显示，d-only 仅桌面端显示 ---------- */
 .m-only { display: none !important; }

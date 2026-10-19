@@ -27,6 +27,7 @@ export async function onRequestPost(context) {
     "渠道编码": body.channel || "direct",
     "事件类型": event,
     "来源页面": body.page || "",
+    "访客ID": String(body.vid || ""),
     "发生时间": Date.now(),
     "备注": note,
   };

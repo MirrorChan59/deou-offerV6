@@ -29,6 +29,17 @@ function icon(name) { return ICONS[name] || ICONS.image; }
     window.DEOU_CHANNEL = ch || (JSON.parse(localStorage.getItem("deou_channel") || "null") || {}).channel || null;
   } catch (e) { window.DEOU_CHANNEL = null; }
 })();
+/* ---------- 访客标识：localStorage 持久化，用于 UV 按天去重 ---------- */
+function getVid() {
+  try {
+    var v = localStorage.getItem("deou_vid");
+    if (!v) {
+      v = (crypto.randomUUID ? crypto.randomUUID() : "v" + Date.now() + Math.random().toString(36).slice(2));
+      localStorage.setItem("deou_vid", v);
+    }
+    return v;
+  } catch (e) { return ""; }
+}
 /* ---------- 渠道事件上报：POST /api/track（统计-渠道事件表） ---------- */
 function trackEvent(event, extra) {
   try {
@@ -36,16 +47,15 @@ function trackEvent(event, extra) {
       channel: window.DEOU_CHANNEL || "direct",
       event: event,
       page: location.pathname,
+      vid: getVid(),
     }, extra || {}));
     if (navigator.sendBeacon) {
       navigator.sendBeacon("/api/track", new Blob([payload], { type: "application/json" }));
     }
   } catch (e) { /* 统计失败不影响访问 */ }
 }
-function reportChannel() {
-  if (window.DEOU_CHANNEL) trackEvent("访问");
-}
-reportChannel();
+/* 全站访问上报（每次页面加载一次，UV 在报表侧按访客ID按天去重） */
+trackEvent("访问");
 
 /* ---------- 二维码 / 提示弹窗 ---------- */
 function showModal(html, cls) {
@@ -80,6 +90,98 @@ function showComingSoon(feature) {
 function showImagePreview(src, alt) {
   if (!src) return;
   showModal(`<img class="preview-img" src="${src}" alt="${alt || "图片预览"}">`, "img-preview");
+}
+
+/* ---------- 用户登录 / 注册（手机号+密码，数据落多维表格「统计-注册用户」） ---------- */
+var AUTH = {
+  token: localStorage.getItem("deou_token") || "",
+  phone: localStorage.getItem("deou_phone") || "",
+};
+function isLoggedIn() { return !!AUTH.token; }
+function setAuth(token, phone) {
+  AUTH.token = token; AUTH.phone = phone;
+  try { localStorage.setItem("deou_token", token); localStorage.setItem("deou_phone", phone); } catch (e) { /* 隐私模式 */ }
+}
+function clearAuth() {
+  AUTH.token = ""; AUTH.phone = "";
+  try { localStorage.removeItem("deou_token"); localStorage.removeItem("deou_phone"); } catch (e) { /* 忽略 */ }
+}
+/* 登录 / 注册弹窗（tabs 切换） */
+function showLoginModal(mode) {
+  mode = mode === "register" ? "register" : "login";
+  showModal(`
+    <h3>登录 / 注册</h3>
+    <div class="auth-tabs">
+      <button class="auth-tab ${mode === "login" ? "on" : ""}" onclick="showLoginModal('login')">登录</button>
+      <button class="auth-tab ${mode === "register" ? "on" : ""}" onclick="showLoginModal('register')">注册</button>
+    </div>
+    <div class="auth-form">
+      <input id="authPhone" type="tel" maxlength="11" placeholder="手机号" autocomplete="tel">
+      <input id="authPwd" type="password" maxlength="64" placeholder="密码（至少 6 位）" autocomplete="${mode === "login" ? "current-password" : "new-password"}">
+      <div class="auth-err" id="authErr"></div>
+      <button class="btn btn-primary auth-submit" onclick="submitAuth('${mode}')">${mode === "login" ? "登录" : "注册并登录"}</button>
+    </div>
+    <p class="auth-note">该手机号仅作为登录账号，用于解锁完整案例内容</p>`, "auth-modal");
+}
+function submitAuth(mode) {
+  var phone = document.getElementById("authPhone").value.trim();
+  var pwd = document.getElementById("authPwd").value;
+  var err = document.getElementById("authErr");
+  if (!/^1\d{10}$/.test(phone)) { err.textContent = "请输入 11 位手机号"; return; }
+  if (pwd.length < 6) { err.textContent = "密码至少 6 位"; return; }
+  err.textContent = "";
+  var btn = document.querySelector(".auth-submit");
+  var label = mode === "login" ? "登录" : "注册并登录";
+  btn.disabled = true; btn.textContent = "提交中…";
+  fetch("/api/auth", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: mode, phone: phone, password: pwd }),
+  }).then(function (r) { return r.json(); }).then(function (data) {
+    if (!data || !data.ok) {
+      err.textContent = (data && data.error) || "操作失败，请稍后重试";
+      btn.disabled = false; btn.textContent = label;
+      return;
+    }
+    setAuth(data.token, data.phone);
+    applyAuthState();
+    unlockCases(); /* 案例页立即解锁，无需刷新 */
+    showModal(`<h3>${mode === "login" ? "登录成功" : "注册成功"}</h3><p>已解锁全部成功案例的完整内容。</p>`);
+    setTimeout(function () {
+      var mask = document.querySelector(".modal-mask");
+      if (mask) mask.classList.remove("show");
+    }, 1200);
+  }).catch(function () {
+    err.textContent = "网络异常，请稍后重试";
+    btn.disabled = false; btn.textContent = label;
+  });
+}
+/* 登录态 UI：导航按钮文案切换 + 案例页锁定提示条显隐 */
+function applyAuthState() {
+  document.querySelectorAll("[data-action='login']").forEach(function (b) {
+    if (!b.dataset.label) b.dataset.label = b.textContent.trim();
+    b.textContent = isLoggedIn() ? "退出登录" : b.dataset.label;
+  });
+  var notice = document.querySelector(".lock-notice");
+  if (notice) notice.style.display = isLoggedIn() ? "none" : "";
+}
+/* 登录后拉取完整案例（不脱敏）并替换渲染 */
+function unlockCases() {
+  if (!isLoggedIn() || typeof CASES === "undefined") return;
+  if (!document.getElementById("caseTable")) return; /* 仅案例页需要 */
+  fetch("/api/cases", { headers: { "Authorization": "Bearer " + AUTH.token }, cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data && data.ok && Array.isArray(data.cases) && data.cases.length) {
+        window.DEOU_CASES_UNLOCKED = true; /* 阻止配置轮询用脱敏数据回灌 */
+        CASES.splice.apply(CASES, [0, CASES.length].concat(data.cases));
+        initCases();
+      } else if (data && !data.ok) {
+        clearAuth(); /* 令牌失效：回到未登录态 */
+        applyAuthState();
+      }
+    })
+    .catch(function () { /* 接口异常时保持脱敏列表 */ });
 }
 
 /* ---------- 页面静态二维码与「预约咨询」弹窗同源 ----------
@@ -258,12 +360,14 @@ function initCases() {
         <div class="hide-m">${c.year}</div>
         <div class="hide-m">${c.service}</div>
         <div class="case-offer">${c.offer}</div>
-        <div style="text-align:right">${c.locked
-          ? '<button class="btn btn-ghost-light" onclick="showComingSoon(\'登录查看完整案例\')">🔒 登录查看</button>'
+        <div style="text-align:right">${c.locked && !isLoggedIn()
+          ? '<button class="btn btn-ghost-light" onclick="showLoginModal(\'login\')">🔒 登录查看</button>'
           : `<button class="btn btn-outline" onclick="showCaseDetail(${CASES.indexOf(c)})">查看详情 →</button>`}</div>
       </div>`).join("");
     const unlocked = CASES.length;
-    document.getElementById("caseTotal").textContent = `共 ${unlocked} 个成功案例 · 登录查看全部 ${unlocked} 个案例`;
+    document.getElementById("caseTotal").textContent = isLoggedIn()
+      ? `共 ${unlocked} 个成功案例 · 已解锁完整内容`
+      : `共 ${unlocked} 个成功案例 · 登录查看全部 ${unlocked} 个案例`;
   }
   if (!filtersRoot.dataset.bound) {
     filtersRoot.dataset.bound = "1";
@@ -425,8 +529,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if (a.dataset.nav === page) a.classList.add("active");
   });
   document.querySelectorAll("[data-action='qr']").forEach((b) => b.addEventListener("click", showQrModal));
-  document.querySelectorAll("[data-action='login']").forEach((b) => b.addEventListener("click", () => showComingSoon("登录 / 注册")));
+  document.querySelectorAll("[data-action='login']").forEach((b) => b.addEventListener("click", () => {
+    if (isLoggedIn()) {
+      clearAuth();
+      window.DEOU_CASES_UNLOCKED = false;
+      applyAuthState();
+      showModal("<h3>已退出登录</h3><p>退出后案例将恢复脱敏展示。</p>");
+      setTimeout(() => location.reload(), 900); /* 重新加载以恢复脱敏数据源 */
+    } else {
+      showLoginModal("login");
+    }
+  }));
   document.querySelectorAll("[data-action='doc']").forEach((b) => b.addEventListener("click", () => showComingSoon(b.textContent.trim())));
+  applyAuthState();
+  unlockCases();
   initBanner();
   initMobileNav();
   applyChannelQr();

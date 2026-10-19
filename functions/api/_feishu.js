@@ -22,6 +22,7 @@ export const TABLES = {
   companies: "tbl1vNb5NImxzjKy",   // 配置-合作企业
   channels: "tblNhd3NbdIAPQ7u",    // 配置-渠道二维码
   trackEvents: "tblvmtEyLYqs33Gd", // 统计-渠道事件
+  users: "tblVGKcXgN03e5RR",       // 统计-注册用户（手机号+密码哈希）
 };
 
 /* ---------- 响应工具 ---------- */
@@ -29,7 +30,7 @@ export function corsHeaders(extra) {
   return Object.assign({
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, X-Admin-Token",
+    "Access-Control-Allow-Headers": "Content-Type, X-Admin-Token, Authorization",
     "Access-Control-Max-Age": "86400",
   }, extra || {});
 }
@@ -95,6 +96,27 @@ export async function listRecords(env, tableId) {
   return (data && data.items) || [];
 }
 
+/* 读取整表（自动翻页，适合事件 / 用户等持续增长的表） */
+export async function listAllRecords(env, tableId) {
+  const out = [];
+  let pageToken = "";
+  do {
+    const data = await feishuApi(env,
+      "/open-apis/bitable/v1/apps/" + env.BASE_TOKEN + "/tables/" + tableId +
+      "/records?page_size=500" + (pageToken ? "&page_token=" + pageToken : ""));
+    out.push(...(((data || {}).items) || []));
+    pageToken = data && data.has_more ? data.page_token : "";
+  } while (pageToken);
+  return out;
+}
+
+/* 更新单条记录 */
+export async function updateRecord(env, tableId, recordId, fields) {
+  await feishuApi(env,
+    "/open-apis/bitable/v1/apps/" + env.BASE_TOKEN + "/tables/" + tableId + "/records/" + recordId,
+    { method: "PUT", body: JSON.stringify({ fields }) });
+}
+
 export async function batchCreate(env, tableId, fieldsList) {
   const out = [];
   for (let i = 0; i < fieldsList.length; i += 200) {
@@ -150,4 +172,57 @@ export function checkAdmin(request, env) {
     return json({ ok: false, error: "管理口令不正确" }, 401);
   }
   return null;
+}
+
+
+/* ---------- 用户登录令牌（HMAC-SHA256 签名，7 天有效） ----------
+ * 签名密钥优先取 AUTH_SECRET，未配置时回退 FEISHU_APP_SECRET（已部署的 Secret）。 */
+const TOKEN_TTL_MS = 7 * 24 * 3600 * 1000;
+
+function b64urlEncode(bytes) {
+  let bin = "";
+  bytes.forEach((b) => { bin += String.fromCharCode(b); });
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function b64urlDecode(str) {
+  const b64 = str.replace(/-/g, "+").replace(/_/g, "/");
+  const bin = atob(b64 + "=".repeat((4 - (b64.length % 4)) % 4));
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function authSecret(env) {
+  return env.AUTH_SECRET || env.FEISHU_APP_SECRET || "deou-auth-fallback";
+}
+async function hmacKey(env) {
+  return crypto.subtle.importKey("raw", new TextEncoder().encode(authSecret(env)),
+    { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"]);
+}
+
+export async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/* 生成登录令牌：base64url(payload).base64url(hmac) */
+export async function signUserToken(phone, env) {
+  const body = b64urlEncode(new TextEncoder().encode(JSON.stringify({ p: phone, e: Date.now() + TOKEN_TTL_MS })));
+  const sig = await crypto.subtle.sign("HMAC", await hmacKey(env), new TextEncoder().encode(body));
+  return body + "." + b64urlEncode(new Uint8Array(sig));
+}
+
+/* 校验登录令牌：通过返回手机号，失败返回 null */
+export async function verifyUserToken(request, env) {
+  const m = (request.headers.get("Authorization") || "").match(/^Bearer\s+(.+)$/);
+  if (!m) return null;
+  const parts = m[1].split(".");
+  if (parts.length !== 2) return null;
+  try {
+    const ok = await crypto.subtle.verify("HMAC", await hmacKey(env),
+      b64urlDecode(parts[1]), new TextEncoder().encode(parts[0]));
+    if (!ok) return null;
+    const payload = JSON.parse(new TextDecoder().decode(b64urlDecode(parts[0])));
+    if (!payload.p || !payload.e || payload.e < Date.now()) return null;
+    return payload.p;
+  } catch (e) { return null; }
 }
